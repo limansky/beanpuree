@@ -1,7 +1,7 @@
 lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
-    version := "0.1",
+    version := "0.1-SNAPSHOT",
     scalaVersion := "2.12.1",
     crossScalaVersions := Seq("2.11.8", "2.12.1"),
     organization := "me.limansky",
