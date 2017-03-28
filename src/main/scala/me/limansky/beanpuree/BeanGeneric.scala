@@ -16,7 +16,7 @@
 
 package me.limansky.beanpuree
 
-import shapeless.CaseClassMacros
+import shapeless.{CaseClassMacros, HList}
 
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
@@ -30,36 +30,76 @@ trait BeanGeneric[B] {
 object BeanGeneric {
   type Aux[B, R] = BeanGeneric[B] { type Repr = R }
 
-  def apply[B](implicit beanGeneric: BeanGeneric[B]): BeanGeneric[B] = beanGeneric
+  def apply[B](implicit beanGeneric: BeanGeneric[B]): Aux[B, beanGeneric.Repr] = beanGeneric
 
-  implicit def materialize[B, R]: Aux[B, R] = macro BeanGenericMacro.materialize[B, R]
+  implicit def materialize[B, R]: Aux[B, R] = macro BeanGenericMacros.materialize[B, R]
 }
 
+@macrocompat.bundle
 trait BeanUtil { self: CaseClassMacros =>
   import c.universe._
 
-  def beanReprTypTree(t: Type): Tree = {
-    q"_root_.shapeles.HNil"
+  def beanReprTypTree(tpe: Type): Tree = {
+    mkHListTypTree(propsOf(tpe).map(_._2))
+  }
+
+  object Getter {
+    val getterPattern = "^(is|get)(.*)".r
+    def unapply(sym: TermSymbol): Option[(String, TermSymbol)] = {
+      val nameStr = sym.name.toString
+      for {
+        getterPattern(_, name) <- getterPattern.findFirstIn(nameStr)
+      } yield (name, sym)
+    }
+  }
+
+  object BeanCtorDtor {
+    def apply(tpe: Type): CtorDtor = {
+      new CtorDtor {
+        def construct(args: List[Tree]): Tree = q"new $tpe"
+        def binding: (Tree, List[Tree]) = (pq"_", Nil)
+        def reprBinding: (Tree, List[Tree]) = (pq"_", Nil)
+      }
+    }
+  }
+
+  def propsOf(tpe: Type): List[(TermName, Type)] = {
+    val methods = tpe.decls.toList collect {
+      case sym: TermSymbol if sym.isMethod => sym
+    }
+
+    val getters = methods.collect {
+      case Getter(x@(_,_)) => x
+    }
+
+    getters
+      .filter(x => methods.exists(_.name.toString == "set" + x._1))
+      .map { case (_, sym) => (sym.name.toTermName, sym.typeSignatureIn(tpe).finalResultType) }
   }
 }
 
 @macrocompat.bundle
-class BeanGenericMacro(val c: whitebox.Context) extends CaseClassMacros with BeanUtil {
+class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with BeanUtil {
   import c.universe._
 
-  def materialize[B: WeakTypeTag, R: WeakTypeTag]: c.Expr[BeanGeneric.Aux[B, R]] = {
+  def materialize[B: WeakTypeTag, R: WeakTypeTag]: Tree = {
     val tpe = weakTypeOf[B]
-//    if (tpe)
+    val rtpe = beanReprTypTree(tpe)
+    val ctorDtor = BeanCtorDtor(tpe)
+    val (p, ts) = ctorDtor.binding
 
+    val to = cq""" $p => ${mkHListValue(ts)} """
 
     val className = TypeName(c.freshName("anon$"))
 
-    c.Expr(q"""
-      final class $className extends _root_.me.limansky.BeanGeneric[$tpe] {
-        override type Repr = ${beanReprTypTree(tpe)}
+    q"""
+      final class $className extends _root_.me.limansky.beanpuree.BeanGeneric[$tpe] {
+        override type Repr = $rtpe
+        override def to(b: $tpe): Repr = (b match { case $to }).asInstanceOf[Repr]
+        override def from(r: Repr): $tpe = ???
       }
 
-      new $className(): _root_.me.limansky.BeanGeneric.Aux[$tpe, ${beanReprTypTree(tpe)}]
-    """)
+      new $className: _root_.me.limansky.beanpuree.BeanGeneric.Aux[$tpe, $rtpe]
+    """
   }
 }
