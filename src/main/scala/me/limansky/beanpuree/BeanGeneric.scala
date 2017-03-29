@@ -45,7 +45,7 @@ trait BeanUtil { self: CaseClassMacros =>
 
   object Getter {
     val getterPattern = "^(is|get)(.*)".r
-    def unapply(sym: TermSymbol): Option[(String, TermSymbol)] = {
+    def unapply[T <: Symbol](sym: T): Option[(String, T)] = {
       val nameStr = sym.name.toString
       for {
         getterPattern(_, name) <- getterPattern.findFirstIn(nameStr)
@@ -55,25 +55,52 @@ trait BeanUtil { self: CaseClassMacros =>
 
   object BeanCtorDtor {
     def apply(tpe: Type): CtorDtor = {
+
+      val (gs, ss) = gettersAndSetters(tpe)
+
+      val instance = TermName(c.freshName("ins"))
+
       new CtorDtor {
-        def construct(args: List[Tree]): Tree = q"new $tpe"
-        def binding: (Tree, List[Tree]) = (pq"_", Nil)
+        def construct(args: List[Tree]): Tree = {
+//          val setters = ss.zip(args).map { case (s, a) => q"$instance.$s($a)"}
+          val n = TermName(ss.head.name.toString)
+          q"""
+            val $instance = new $tpe
+            $instance.$n(33)
+            $instance
+          """
+        }
+        def binding: (Tree, List[Tree]) = (pq"x", Nil)
         def reprBinding: (Tree, List[Tree]) = (pq"_", Nil)
       }
     }
   }
 
+  def gettersAndSetters(tpe: Type): (List[MethodSymbol], List[MethodSymbol]) = {
+    val methods = tpe.decls.toList collect {
+      case sym: MethodSymbol if sym.isMethod => sym
+    }
+
+    val byName = methods.map(s => s.name.toString -> s).toMap
+
+    val getters = methods.collect {
+      case Getter(x@(_,_)) => x
+    }.filter(x => byName.contains("set" + x._1))
+
+    val setters = getters.map(x => byName("set" + x._1))
+    (getters.map(_._2), setters)
+  }
+
   def propsOf(tpe: Type): List[(TermName, Type)] = {
     val methods = tpe.decls.toList collect {
-      case sym: TermSymbol if sym.isMethod => sym
+      case sym: MethodSymbol if sym.isMethod => sym
     }
 
     val getters = methods.collect {
       case Getter(x@(_,_)) => x
-    }
+    }.filter(x => methods.exists(_.name.toString == "set" + x._1))
 
     getters
-      .filter(x => methods.exists(_.name.toString == "set" + x._1))
       .map { case (_, sym) => (sym.name.toTermName, sym.typeSignatureIn(tpe).finalResultType) }
   }
 }
@@ -85,21 +112,29 @@ class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with Be
   def materialize[B: WeakTypeTag, R: WeakTypeTag]: Tree = {
     val tpe = weakTypeOf[B]
     val rtpe = beanReprTypTree(tpe)
+    println(s"$rtpe")
     val ctorDtor = BeanCtorDtor(tpe)
-    val (p, ts) = ctorDtor.binding
 
+    val (p, ts) = ctorDtor.binding
     val to = cq""" $p => ${mkHListValue(ts)} """
+
+    val (rp, rts) = ctorDtor.reprBinding
+    val from = cq" $rp => ${ctorDtor.construct(rts)} "
 
     val className = TypeName(c.freshName("anon$"))
 
-    q"""
+    val tree = q"""
       final class $className extends _root_.me.limansky.beanpuree.BeanGeneric[$tpe] {
         override type Repr = $rtpe
         override def to(b: $tpe): Repr = (b match { case $to }).asInstanceOf[Repr]
-        override def from(r: Repr): $tpe = ???
+        override def from(r: Repr): $tpe = r match { case $from }
       }
 
       new $className: _root_.me.limansky.beanpuree.BeanGeneric.Aux[$tpe, $rtpe]
     """
+
+    println("TREE: \n" + showCode(tree))
+
+    tree
   }
 }
