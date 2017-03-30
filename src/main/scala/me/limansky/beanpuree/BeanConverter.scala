@@ -16,21 +16,21 @@
 
 package me.limansky.beanpuree
 
-import shapeless.{HList, LabelledGeneric}
+import shapeless.{Generic, HList}
 
 trait BeanConverter[B, S] {
-  def from(s: S): B
-  def to(b: B): S
+  def productToBean(s: S): B
+  def beanToProduct(b: B): S
 }
 
 object BeanConverter {
   def apply[B, S](implicit beanConverter: BeanConverter[B, S]): BeanConverter[B, S] = beanConverter
 
   implicit def converter[B, S, R <: HList](implicit
-    lgen: LabelledGeneric.Aux[S, R],
+    gen: Generic.Aux[S, R],
     bgen: BeanGeneric.Aux[B, R]
   ): BeanConverter[B, S] = new BeanConverter[B, S] {
-    override def from(s: S): B = bgen.from(lgen.to(s))
-    override def to(b: B): S = lgen.from(bgen.to(b))
+    override def productToBean(s: S): B = bgen.from(gen.to(s))
+    override def beanToProduct(b: B): S = gen.from(bgen.to(b))
   }
 }

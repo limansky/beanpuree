@@ -61,8 +61,6 @@ trait BeanUtil { self: CaseClassMacros =>
       val bean = TermName(c.freshName("bean"))
       val elems = gs.map(_ => TermName(c.freshName("pat")))
 
-      val p = TermName(c.freshName("b"))
-
       val reprPattern =
         elems.foldRight(q"_root_.shapeless.HNil": Tree) {
           case (bound, acc) => pq"_root_.shapeless.::($bound, $acc)"
@@ -112,7 +110,6 @@ class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with Be
   def materialize[B: WeakTypeTag, R: WeakTypeTag]: Tree = {
     val tpe = weakTypeOf[B]
     val rtpe = beanReprTypTree(tpe)
-    println(s"$rtpe")
     val ctorDtor = BeanCtorDtor(tpe)
 
     val (p, ts) = ctorDtor.binding
@@ -123,7 +120,7 @@ class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with Be
 
     val className = TypeName(c.freshName("anon$"))
 
-    val tree = q"""
+    q"""
       final class $className extends _root_.me.limansky.beanpuree.BeanGeneric[$tpe] {
         override type Repr = $rtpe
         override def to(b: $tpe): Repr = (b match { case $to }).asInstanceOf[Repr]
@@ -132,9 +129,5 @@ class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with Be
 
       new $className: _root_.me.limansky.beanpuree.BeanGeneric.Aux[$tpe, $rtpe]
     """
-
-    println("TREE: \n" + showCode(tree))
-
-    tree
   }
 }
