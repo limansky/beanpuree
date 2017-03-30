@@ -91,7 +91,7 @@ trait BeanUtil { self: CaseClassMacros =>
     val byName = methods.map(s => s.name.toString -> s).toMap
 
     val getters = methods.collect {
-      case Getter(x@(_,_)) => x
+      case Getter(x @ (_, _)) => x
     }.filter(x => byName.contains("set" + x._1))
 
     val setters = getters.map(x => byName("set" + x._1))
@@ -99,16 +99,8 @@ trait BeanUtil { self: CaseClassMacros =>
   }
 
   def propsOf(tpe: Type): List[(TermName, Type)] = {
-    val methods = tpe.decls.toList collect {
-      case sym: MethodSymbol if sym.isMethod => sym
-    }
-
-    val getters = methods.collect {
-      case Getter(x@(_,_)) => x
-    }.filter(x => methods.exists(_.name.toString == "set" + x._1))
-
-    getters
-      .map { case (_, sym) => (sym.name.toTermName, sym.typeSignatureIn(tpe).finalResultType) }
+    val (getters, _) = gettersAndSetters(tpe)
+    getters.map(sym => (sym.name.toTermName, sym.typeSignatureIn(tpe).finalResultType))
   }
 }
 
