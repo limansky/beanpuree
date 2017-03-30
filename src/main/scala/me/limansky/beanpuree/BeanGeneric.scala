@@ -60,18 +60,25 @@ trait BeanUtil { self: CaseClassMacros =>
 
       val instance = TermName(c.freshName("ins"))
 
+      val elems = gs.map(_ => TermName(c.freshName("pat")))
+
+      val reprPattern =
+        elems.foldRight(q"_root_.shapeless.HNil": Tree) {
+          case (bound, acc) => pq"_root_.shapeless.::($bound, $acc)"
+        }
+
       new CtorDtor {
         def construct(args: List[Tree]): Tree = {
-//          val setters = ss.zip(args).map { case (s, a) => q"$instance.$s($a)"}
-          val n = TermName(ss.head.name.toString)
+          val setters = ss.zip(args).map { case (s, a) => q"$instance.$s($a)" }
+
           q"""
             val $instance = new $tpe
-            $instance.$n(33)
+            ..$setters
             $instance
           """
         }
         def binding: (Tree, List[Tree]) = (pq"x", Nil)
-        def reprBinding: (Tree, List[Tree]) = (pq"_", Nil)
+        def reprBinding: (Tree, List[Tree]) = (reprPattern, elems.map(e => q"$e"))
       }
     }
   }
