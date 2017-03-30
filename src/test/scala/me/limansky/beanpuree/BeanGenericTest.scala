@@ -16,8 +16,8 @@
 
 package me.limansky.beanpuree
 
-import org.scalatest.{FlatSpec, Matchers}
-import shapeless.{::, Generic, HList, HNil}
+import org.scalatest.{ FlatSpec, Matchers }
+import shapeless.{ ::, Generic, HList, HNil }
 
 class BeanGenericTest extends FlatSpec with Matchers {
 
@@ -26,11 +26,18 @@ class BeanGenericTest extends FlatSpec with Matchers {
     implicitly[gen.Repr =:= (Int :: String :: java.lang.Long :: HNil)]
   }
 
-  it should "convert bean to HList" ignore {
+  it should "convert bean to Repr HList" in {
+    val gen = BeanGeneric[TestBean]
 
+    val bean = new TestBean
+    bean.setAmount(55L)
+    bean.setString("test me")
+    bean.setCount(33)
+
+    gen.to(bean) shouldEqual 33 :: "test me" :: java.lang.Long.valueOf(55L) :: HNil
   }
 
-  it should "convert Hlist to Bean" in {
+  it should "convert Repr HList to Bean" in {
     val gen = BeanGeneric[TestBean]
 
     val bean = gen.from(42 :: "abc" :: java.lang.Long.valueOf(25L) :: HNil)

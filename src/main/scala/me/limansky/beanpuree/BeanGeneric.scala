@@ -58,9 +58,10 @@ trait BeanUtil { self: CaseClassMacros =>
 
       val (gs, ss) = gettersAndSetters(tpe)
 
-      val instance = TermName(c.freshName("ins"))
-
+      val bean = TermName(c.freshName("bean"))
       val elems = gs.map(_ => TermName(c.freshName("pat")))
+
+      val p = TermName(c.freshName("b"))
 
       val reprPattern =
         elems.foldRight(q"_root_.shapeless.HNil": Tree) {
@@ -69,15 +70,15 @@ trait BeanUtil { self: CaseClassMacros =>
 
       new CtorDtor {
         def construct(args: List[Tree]): Tree = {
-          val setters = ss.zip(args).map { case (s, a) => q"$instance.$s($a)" }
+          val setters = ss.zip(args).map { case (s, a) => q"$bean.$s($a)" }
 
           q"""
-            val $instance = new $tpe
+            val $bean = new $tpe
             ..$setters
-            $instance
+            $bean
           """
         }
-        def binding: (Tree, List[Tree]) = (pq"x", Nil)
+        def binding: (Tree, List[Tree]) = (pq"$bean", gs.map(g => q"$bean.$g"))
         def reprBinding: (Tree, List[Tree]) = (reprPattern, elems.map(e => q"$e"))
       }
     }
