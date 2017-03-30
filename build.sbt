@@ -20,5 +20,34 @@ lazy val beanPuree = (project in file ("."))
         case Some((2, x)) if x >= 11 => Seq()
         case _ => sys.error("Unsupported Scala version")
       }
-    }
+    },
+    publishSettings
   )
+
+lazy val publishSettings = Seq(
+  licenses += ("Apache 2.0 License", url("http://www.apache.org/licenses/LICENSE-2.0")),
+  homepage := Some(url("http://github.com/limansky/beanpuree")),
+  publishMavenStyle := true,
+  publishArtifact in Test := false,
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/limansky/beanpuree"),
+      "scm:git:https://github.com/limansky/beanpuree.git",
+      Some("scm:git:git@github.com:limansky/beanpuree.git")
+    )
+  ),
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (version.value.trim.endsWith("SNAPSHOT"))
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  },
+  pomExtra := <developers>
+    <developer>
+      <id>limansky</id>
+      <name>Mike Limansky</name>
+      <url>http://github.com/limansky</url>
+    </developer>
+  </developers>
+)
