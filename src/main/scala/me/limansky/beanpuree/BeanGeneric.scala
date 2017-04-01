@@ -36,7 +36,7 @@ object BeanGeneric {
 }
 
 @macrocompat.bundle
-trait BeanUtil { self: CaseClassMacros =>
+trait BeanUtils { self: CaseClassMacros =>
   import c.universe._
 
   def beanReprTypTree(tpe: Type): Tree = {
@@ -44,7 +44,7 @@ trait BeanUtil { self: CaseClassMacros =>
   }
 
   object Getter {
-    val getterPattern = "^(is|get)(.*)".r
+    val getterPattern = "^(is|get)(.+)".r
     def unapply[T <: Symbol](sym: T): Option[(String, T)] = {
       val nameStr = sym.name.toString
       for {
@@ -99,12 +99,14 @@ trait BeanUtil { self: CaseClassMacros =>
 
   def propsOf(tpe: Type): List[(TermName, Type)] = {
     val (getters, _) = gettersAndSetters(tpe)
-    getters.map(sym => (sym.name.toTermName, sym.typeSignatureIn(tpe).finalResultType))
+    getters.map {
+      case Getter(name, sym) => (TermName(name.head.toLower + name.tail), sym.typeSignatureIn(tpe).finalResultType)
+    }
   }
 }
 
 @macrocompat.bundle
-class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with BeanUtil {
+class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with BeanUtils {
   import c.universe._
 
   def materialize[B: WeakTypeTag, R: WeakTypeTag]: Tree = {
@@ -118,16 +120,12 @@ class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with Be
     val (rp, rts) = ctorDtor.reprBinding
     val from = cq" $rp => ${ctorDtor.construct(rts)} "
 
-    val className = TypeName(c.freshName("anon$"))
-
     q"""
-      final class $className extends _root_.me.limansky.beanpuree.BeanGeneric[$tpe] {
+      new _root_.me.limansky.beanpuree.BeanGeneric[$tpe] {
         override type Repr = $rtpe
         override def to(b: $tpe): Repr = (b match { case $to }).asInstanceOf[Repr]
         override def from(r: Repr): $tpe = r match { case $from }
-      }
-
-      new $className: _root_.me.limansky.beanpuree.BeanGeneric.Aux[$tpe, $rtpe]
+      }: _root_.me.limansky.beanpuree.BeanGeneric.Aux[$tpe, $rtpe]
     """
   }
 }

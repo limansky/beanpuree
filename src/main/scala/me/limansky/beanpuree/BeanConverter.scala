@@ -16,7 +16,8 @@
 
 package me.limansky.beanpuree
 
-import shapeless.{Generic, HList}
+import shapeless.ops.hlist.Align
+import shapeless.{HList, LabelledGeneric}
 
 trait BeanConverter[B, S] {
   def productToBean(s: S): B
@@ -26,11 +27,13 @@ trait BeanConverter[B, S] {
 object BeanConverter {
   def apply[B, S](implicit beanConverter: BeanConverter[B, S]): BeanConverter[B, S] = beanConverter
 
-  implicit def converter[B, S, R <: HList](implicit
-    gen: Generic.Aux[S, R],
-    bgen: BeanGeneric.Aux[B, R]
-  ): BeanConverter[B, S] = new BeanConverter[B, S] {
-    override def productToBean(s: S): B = bgen.from(gen.to(s))
-    override def beanToProduct(b: B): S = gen.from(bgen.to(b))
+  implicit def converter[B, P, BR <: HList, PR <: HList](implicit
+    gen: LabelledGeneric.Aux[P, PR],
+    bgen: LabelledBeanGeneric.Aux[B, BR],
+    align: Align[BR, PR],
+    revAlign: Align[PR, BR]
+  ): BeanConverter[B, P] = new BeanConverter[B, P] {
+    override def productToBean(s: P): B = bgen.from(revAlign(gen.to(s)))
+    override def beanToProduct(b: B): P = gen.from(align(bgen.to(b)))
   }
 }

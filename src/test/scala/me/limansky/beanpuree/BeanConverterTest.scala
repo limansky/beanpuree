@@ -43,4 +43,14 @@ class BeanConverterTest extends FlatSpec with Matchers {
     bean.getString shouldEqual "back to Java"
     bean.isEnabled shouldBe true
   }
+
+  it should "ignore fields order" in {
+    val converter = BeanConverter[TestBean, TestProductDisordered]
+    val bean = converter.productToBean(TestProductDisordered("a", 5L, 4, false))
+
+    bean.getCount shouldEqual 4
+    bean.getAmount shouldEqual 5
+    bean.isEnabled shouldBe false
+    bean.getString shouldEqual "a"
+  }
 }

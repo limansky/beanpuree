@@ -16,6 +16,13 @@
 
 package me.limansky.beanpuree
 
-case class TestProduct(count: Int, string: String, amount: java.lang.Long, enabled: Boolean)
+import org.scalatest.{FlatSpec, Matchers}
+import shapeless.HNil
 
-case class TestProductDisordered(string: String, amount: java.lang.Long, count: Int, enabled: Boolean)
+class BeanLabellingTest extends FlatSpec with Matchers {
+
+  "BeanLabelling" should "extract field names" in {
+    val lab = BeanLabelling[TestBean]
+    lab() shouldEqual  Symbol("count") :: Symbol("string") :: Symbol("amount") :: Symbol("enabled") :: HNil
+  }
+}

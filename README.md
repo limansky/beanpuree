@@ -64,11 +64,15 @@ scala> gen.to(foo)
 res2: gen.Repr = 5 :: changed :: HNil
 ```
 
-The next thing is a `BeanConverter` class.  It uses `BeanGeneric` and `Generic`
-to convert between beans and case classes:
+Another important thing is `LabelledBeanGeneric`, which is a `LabelledGeneric` adopted
+for the beans.  It's important to note, that it uses "field names" generated from the
+getters names.  E.g.  `getStartTime` become `startTime` and `isEven` become `even`.
+
+The next thing is a `BeanConverter` class.  It uses `LabelledBeanGeneric` and `LabelledGeneric`
+to convert between beans and case classes.
 
 ```Scala
-scala> case class Bar(number: Int, string: String)
+scala> case class Bar(a: Int, b: String)
 defined class Bar
 
 scala> val conv = BeanConverter[Foo, Bar]
@@ -76,6 +80,14 @@ conv: me.limansky.beanpuree.BeanConverter[Foo,Bar] = me.limansky.beanpuree.BeanC
 
 scala> conv.beanToProduct(foo)
 res3: Bar = Bar(5,changed)
+
+scala> conv.productToBean(Bar(15, "bar"))
+res4: Foo = Foo(15, "bar")
 ```
+
+`BeanConverter` doesn't care about fields order, but requires to have all the
+same fields with the same types.  It also mean that if the bean uses Java
+numberic classes (like java.lang.Integer), the case class also should have the
+field with Java class.
 
 [shapeless]: http://github.com/milessabin/shapeless
