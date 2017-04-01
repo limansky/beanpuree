@@ -6,7 +6,7 @@ BeanPurée
 > NOTE: The library is in active development stage. So the API might be changed.
 
 [![Build Status](https://travis-ci.org/limansky/beanpuree.svg?branch=master)](https://travis-ci.org/limansky/beanpuree)
-[![Join the chat at https://gitter.im/beanpuree/Lobby](https://badges.gitter.im/beanpuree/Lobby.svg)](https://gitter.im/beanpuree/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/limansky/beanpuree](https://badges.gitter.im/limansky/beanpuree.svg)](https://gitter.im/limansky/beanpuree?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Motivation
 
