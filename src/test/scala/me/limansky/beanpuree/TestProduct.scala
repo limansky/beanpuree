@@ -16,4 +16,4 @@
 
 package me.limansky.beanpuree
 
-case class TestProduct(count: Int, string: String, amount: java.lang.Long)
+case class TestProduct(count: Int, string: String, amount: java.lang.Long, enabled: Boolean)

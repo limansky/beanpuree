@@ -21,6 +21,7 @@ public class TestBean {
     private int count;
     private String string;
     private Long amount;
+    private boolean enabled;
 
     public int getCount() {
         return count;
@@ -44,5 +45,13 @@ public class TestBean {
 
     public void setAmount(Long amount) {
         this.amount = amount;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

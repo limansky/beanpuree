@@ -28,17 +28,19 @@ class BeanConverterTest extends FlatSpec with Matchers {
     bean.setAmount(1L)
     bean.setCount(4)
     bean.setString("text")
+    bean.setEnabled(true)
 
-    converter.beanToProduct(bean) shouldEqual TestProduct(4, "text", 1L)
+    converter.beanToProduct(bean) shouldEqual TestProduct(4, "text", 1L, true)
   }
 
   it should "convert case class to bean" in {
     val converter = BeanConverter[TestBean, TestProduct]
 
-    val bean = converter.productToBean(TestProduct(8, "back to Java", 43L))
+    val bean = converter.productToBean(TestProduct(8, "back to Java", 43L, true))
 
     bean.getAmount shouldEqual 43L
     bean.getCount shouldEqual 8
     bean.getString shouldEqual "back to Java"
+    bean.isEnabled shouldBe true
   }
 }
