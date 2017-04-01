@@ -1,6 +1,8 @@
 BeanPurée
 =========
 
+[![Join the chat at https://gitter.im/limansky/beanpuree](https://badges.gitter.im/limansky/beanpuree.svg)](https://gitter.im/limansky/beanpuree?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 **BeanPurée** is a middle layer between JavaBeans and [shapeless][shapeless].
 
 > NOTE: The library is in active development stage. So the API might be changed.
