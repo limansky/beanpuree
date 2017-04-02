@@ -10,8 +10,8 @@ BeanPurée
 
 ## Motivation
 
-Even thought Scala compatible with Java, the languages are different, and the
-coding styles are different too.  In Scala we like to use immutable case classes,
+Even though Scala is compatible with Java, the languages are different, and the
+coding styles are different too.  In Scala we prefer to use immutable case classes,
 but in Java world mutable JavaBeans are common building blocks.  Moreover, many
 Scala libraries provide API which requires case classes (e.g. different serializers).
 As result, we need to have similar model classes for Java and Scala.  This library
@@ -87,7 +87,7 @@ res4: Foo = Foo(15, "bar")
 
 `BeanConverter` doesn't care about fields order, but requires to have all the
 same fields with the same types.  It also mean that if the bean uses Java
-numberic classes (like java.lang.Integer), the case class also should have the
+numeric classes (like java.lang.Integer), the case class also should have the
 field with Java class.
 
 [shapeless]: http://github.com/milessabin/shapeless
