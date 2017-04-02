@@ -23,6 +23,12 @@ class BeanLabellingTest extends FlatSpec with Matchers {
 
   "BeanLabelling" should "extract field names" in {
     val lab = BeanLabelling[TestBean]
-    lab() shouldEqual  Symbol("count") :: Symbol("string") :: Symbol("amount") :: Symbol("enabled") :: HNil
+    lab() shouldEqual  'count :: 'string :: 'amount :: 'enabled :: HNil
+  }
+
+  it should "skip invalid setters and getters" in {
+    val lab = BeanLabelling[WeirdBean]
+
+    lab() shouldEqual 'y :: HNil
   }
 }

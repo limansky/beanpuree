@@ -42,4 +42,15 @@ class LabelledBeanGenericTest extends FlatSpec with Matchers {
     bean.getString shouldEqual "451"
     bean.isEnabled shouldBe true
   }
+
+  it should "ignore invalid getters and setters" in {
+    val gen = LabelledBeanGeneric[WeirdBean]
+
+    val bean = new WeirdBean
+    bean.setW(5)
+    bean.setX(6)
+    bean.setY(7)
+
+    gen.to(bean) shouldEqual 'y ->> 7 :: HNil
+  }
 }
