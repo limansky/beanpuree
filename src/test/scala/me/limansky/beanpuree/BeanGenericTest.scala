@@ -47,4 +47,13 @@ class BeanGenericTest extends FlatSpec with Matchers {
     bean.getAmount shouldEqual 25L
     bean.isEnabled shouldBe true
   }
+
+  it should "ignore strange getters" in {
+    val gen = BeanGeneric[WeirdBean]
+    val bean = new WeirdBean
+    bean.setX(5)
+    bean.setY(6)
+
+    gen.to(bean) shouldEqual 6 :: HNil
+  }
 }

@@ -45,11 +45,13 @@ trait BeanUtils { self: CaseClassMacros =>
 
   object Getter {
     val getterPattern = "^(is|get)(.+)".r
-    def unapply[T <: Symbol](sym: T): Option[(String, T)] = {
-      val nameStr = sym.name.toString
-      for {
-        getterPattern(_, name) <- getterPattern.findFirstIn(nameStr)
-      } yield (name, sym)
+    def unapply(sym: MethodSymbol): Option[(String, MethodSymbol)] = {
+      if (sym.paramLists.isEmpty || sym.paramLists == List(List())) {
+        val nameStr = sym.name.toString
+        for {
+          getterPattern(_, name) <- getterPattern.findFirstIn(nameStr)
+        } yield (name, sym)
+      } else None
     }
   }
 
@@ -91,7 +93,14 @@ trait BeanUtils { self: CaseClassMacros =>
 
     val getters = methods.collect {
       case Getter(x @ (_, _)) => x
-    }.filter(x => byName.contains("set" + x._1))
+    }.filter(x => byName.exists { case (name, sym) =>
+      name == "set" + x._1 &&
+        sym.typeSignature.finalResultType =:= typeOf[Unit] &&
+        (sym.paramLists match {
+          case List(List(t)) => t.typeSignature =:= x._2.typeSignature.finalResultType
+          case _ => false
+        })
+    })
 
     val setters = getters.map(x => byName("set" + x._1))
     (getters.map(_._2), setters)
