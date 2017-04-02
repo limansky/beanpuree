@@ -19,27 +19,41 @@ package me.limansky.beanpuree
 import shapeless.HList
 import shapeless.ops.hlist.ZipWithKeys
 
-
-trait LabelledBeanGeneric[T] {
+/**
+  * Similar to [[BeanGeneric]], but like [[shapeless.LabelledGeneric]] adds field names information
+  * to Repr. Field names are calculated from getters. E.g `getLoginDate` become `loginDate`, and `isActive`
+  * become `active`.
+  *
+  * For the bean from the [[BeanGeneric]] example the Repr type will be `'name -> String :: 'age -> Int :: HNil`.
+  *
+  * @tparam B bean type
+  */
+trait LabelledBeanGeneric[B] {
+  /** Generic representation of B */
   type Repr
-  def to(t : T) : Repr
-  def from(r : Repr) : T
+  /** Converts bean instance to generic value representation */
+  def to(b: B) : Repr
+  /** Converts generic value into bean */
+  def from(r: Repr) : B
 }
 
+/**
+  * Companion for [[LabelledBeanGeneric]].  Provides ability to obtain an instance of [[LabelledBeanGeneric]].
+  */
 object LabelledBeanGeneric {
-  type Aux[T, R] = LabelledBeanGeneric[T] { type Repr = R }
+  type Aux[B, R] = LabelledBeanGeneric[B] { type Repr = R }
 
-  def apply[T](implicit gen: LabelledBeanGeneric[T]): Aux[T, gen.Repr] = gen
+  def apply[B](implicit gen: LabelledBeanGeneric[B]): Aux[B, gen.Repr] = gen
 
-  implicit def beanLabelledGeneric[T, K <: HList, G <: HList, R <: HList](implicit
-    lab: BeanLabelling.Aux[T, K],
-    gen: BeanGeneric.Aux[T, G],
+  implicit def beanLabelledGeneric[B, K <: HList, G <: HList, R <: HList](implicit
+    lab: BeanLabelling.Aux[B, K],
+    gen: BeanGeneric.Aux[B, G],
     zip: ZipWithKeys.Aux[K, G, R],
     ev: R <:< G
-  ): Aux[T, R] = new LabelledBeanGeneric[T] {
+  ): Aux[B, R] = new LabelledBeanGeneric[B] {
     override type Repr = R
-    override def to(t: T): R = zip(gen.to(t))
+    override def to(b: B): R = zip(gen.to(b))
 
-    override def from(r: R): T = gen.from(r)
+    override def from(r: R): B = gen.from(r)
   }
 }

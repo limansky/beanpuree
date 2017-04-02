@@ -19,9 +19,20 @@ package me.limansky.beanpuree
 import shapeless.ops.hlist.Align
 import shapeless.{HList, LabelledGeneric}
 
-trait BeanConverter[B, S] {
-  def productToBean(s: S): B
-  def beanToProduct(b: B): S
+/**
+  * Converts bean to product type (case class) and backwards.
+  *
+  * Doesn't care about fields order. Only requires that the fields have same type and same name.
+  *
+  * @see [[LabelledBeanGeneric]]
+  * @tparam B bean type
+  * @tparam P product type type
+  */
+trait BeanConverter[B, P] {
+  /** Converts product instance to bean */
+  def productToBean(p: P): B
+  /** Converts bean instance to product */
+  def beanToProduct(b: B): P
 }
 
 object BeanConverter {
@@ -33,7 +44,7 @@ object BeanConverter {
     align: Align[BR, PR],
     revAlign: Align[PR, BR]
   ): BeanConverter[B, P] = new BeanConverter[B, P] {
-    override def productToBean(s: P): B = bgen.from(revAlign(gen.to(s)))
+    override def productToBean(p: P): B = bgen.from(revAlign(gen.to(p)))
     override def beanToProduct(b: B): P = gen.from(align(bgen.to(b)))
   }
 }

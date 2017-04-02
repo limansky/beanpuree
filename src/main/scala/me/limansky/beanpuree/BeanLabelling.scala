@@ -21,23 +21,27 @@ import shapeless.{CaseClassMacros, DepFn0, HList, SingletonTypeUtils}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
-
-trait BeanLabelling[T] extends DepFn0 with Serializable { type Out <: HList }
+/**
+  * Represents ability to extract labels, like [[shapeless.DefaultSymbolicLabelling]] but for JavaBeans.
+  *
+  * @tparam B bean to extract labels
+  */
+trait BeanLabelling[B] extends DepFn0 with Serializable { type Out <: HList }
 
 object BeanLabelling {
-  type Aux[T, O] = BeanLabelling[T] { type Out = O }
+  type Aux[B, O] = BeanLabelling[B] { type Out = O }
 
-  def apply[T](implicit lab: BeanLabelling[T]): Aux[T, lab.Out] = lab
+  def apply[B](implicit lab: BeanLabelling[B]): Aux[B, lab.Out] = lab
 
-  implicit def beanLabelling[T]: BeanLabelling[T] = macro BeanLabellingMacros.mkLabelling[T]
+  implicit def beanLabelling[B]: BeanLabelling[B] = macro BeanLabellingMacros.mkLabelling[B]
 }
 
 @macrocompat.bundle
 class BeanLabellingMacros(val c: whitebox.Context) extends SingletonTypeUtils with CaseClassMacros with BeanUtils {
   import c.universe._
 
-  def mkLabelling[T : WeakTypeTag]: Tree = {
-    val tpe = weakTypeOf[T]
+  def mkLabelling[B : WeakTypeTag]: Tree = {
+    val tpe = weakTypeOf[B]
 
     if (!isBean(tpe)) abort(s"$tpe is not a bean")
 

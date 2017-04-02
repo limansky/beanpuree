@@ -21,15 +21,63 @@ import shapeless.CaseClassMacros
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
+/**
+  * Represents an ability to convert bean of type B to generic representation ([[shapeless.HList]]).
+  * This is almost the same with [[shapeless.Generic]], but for JavaBeans. E.g:
+  *
+  * {{{
+  *   public class Cat {
+  *       private String name;
+  *       private int age;
+  *
+  *       public String getName() { return name };
+  *       public void setName(String name) { this.name = name; }
+  *
+  *       public int getAge() { return age; }
+  *       public void setAge(int age) { this.age = age; }
+  *   }
+  * }}}
+  *
+  * Then the BeanGeneric instance will have `Repr` = `String :: Int :: HNil`. Note that the HList
+  * order is the same with the bean properties getters declaration order.
+  *
+  * Now it's possible to convert bean to HList, and then convert HList to something else.
+  *
+  * @tparam B the bean type
+  */
 trait BeanGeneric[B] {
+  /** Generic representation type {B} ([[shapeless.HList]] */
   type Repr
+
+  /** Converts bean to generic representation. */
   def to(b: B): Repr
+
+  /** Converts generic representation to bean instance */
   def from(r: Repr): B
 }
 
+/**
+  * The companion object for [[BeanGeneric]] trait providing the way to obtain [[BeanGeneric]] instances.
+  */
 object BeanGeneric {
+  /**
+    * Provides representation of BeanGeneric with Repr type as a type parameter.  This representation is useful
+    * in implicit parameters capturing:
+    *
+    * {{{
+    *   def convert[A, B, R <: HList](a: A)(implicit
+    *     agen: BeanGeneric.Aux[A, R],
+    *     bgen: Generic.Aux[B, R]): B = bgen.from(agen.to(a))
+    * }}}
+    *
+    * @tparam B bean type
+    * @tparam R generic representation type
+    */
   type Aux[B, R] = BeanGeneric[B] { type Repr = R }
 
+  /**
+    * Provides a [[BeanGeneric]] instance for type {B} if possible.
+    */
   def apply[B](implicit beanGeneric: BeanGeneric[B]): Aux[B, beanGeneric.Repr] = beanGeneric
 
   implicit def materialize[B, R]: Aux[B, R] = macro BeanGenericMacros.materialize[B, R]
