@@ -29,17 +29,18 @@ object BeanLabelling {
 
   def apply[T](implicit lab: BeanLabelling[T]): Aux[T, lab.Out] = lab
 
-  implicit def beanLabelling[T]: BeanLabelling[T] = macro BeanLabelledMacros.mkLabelling[T]
+  implicit def beanLabelling[T]: BeanLabelling[T] = macro BeanLabellingMacros.mkLabelling[T]
 }
 
 @macrocompat.bundle
-class BeanLabelledMacros(val c: whitebox.Context) extends SingletonTypeUtils with CaseClassMacros with BeanUtils {
+class BeanLabellingMacros(val c: whitebox.Context) extends SingletonTypeUtils with CaseClassMacros with BeanUtils {
   import c.universe._
 
   def mkLabelling[T : WeakTypeTag]: Tree = {
-    // TODO: Add guard
-
     val tpe = weakTypeOf[T]
+
+    if (!isBean(tpe)) abort(s"$tpe is not a bean")
+
     val labels = propsOf(tpe).map(f => nameAsString(f._1))
 
     val labelTypes = labels.map(SingletonSymbolType(_))
