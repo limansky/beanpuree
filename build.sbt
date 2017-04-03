@@ -1,7 +1,8 @@
+import ReleaseTransformations._
+
 lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
-    version := "0.1-SNAPSHOT",
     scalaVersion := "2.12.1",
     crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
@@ -21,7 +22,8 @@ lazy val beanPuree = (project in file ("."))
         case _ => sys.error("Unsupported Scala version")
       }
     },
-    publishSettings
+    publishSettings,
+    releaseSettings
   )
 
 lazy val publishSettings = Seq(
@@ -50,4 +52,23 @@ lazy val publishSettings = Seq(
       <url>http://github.com/limansky</url>
     </developer>
   </developers>
+)
+
+lazy val releaseSettings = Seq(
+  releaseCrossBuild := true,
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runClean,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    publishArtifacts,
+    setNextVersion,
+    commitNextVersion,
+    ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
+    pushChanges
+  )
 )
