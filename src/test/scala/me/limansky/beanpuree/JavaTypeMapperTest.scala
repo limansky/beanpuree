@@ -24,60 +24,60 @@ import shapeless.{::, HNil}
 class JavaTypeMapperTest extends FlatSpec with Matchers {
 
   "Mappers" should "support mapping between Java Integer and Int" in {
-    val m = implicitly[JavaTypeMapper[Integer, Int]]
+    val m = JavaTypeMapper[Integer, Int]
 
     m.javaToScala(Integer.valueOf(42)) shouldEqual 42
     m.scalaToJava(25) shouldEqual Integer.valueOf(25)
   }
 
   it should "support mapping between Java Double and Double" in {
-    val m = implicitly[JavaTypeMapper[java.lang.Double, Double]]
+    val m = JavaTypeMapper[java.lang.Double, Double]
 
     m.javaToScala(java.lang.Double.valueOf(42)) shouldEqual 42d
     m.scalaToJava(25d) shouldEqual java.lang.Double.valueOf(25)
   }
 
   it should "support mapping between Java Long and Long" in {
-    val m = implicitly[JavaTypeMapper[java.lang.Long, Long]]
+    val m = JavaTypeMapper[java.lang.Long, Long]
 
     m.javaToScala(java.lang.Long.valueOf(42)) shouldEqual 42l
     m.scalaToJava(25l) shouldEqual java.lang.Long.valueOf(25)
   }
 
   it should "support mapping between Character and Char" in {
-    val m = implicitly[JavaTypeMapper[Character, Char]]
+    val m = JavaTypeMapper[Character, Char]
 
     m.javaToScala(Character.valueOf('a')) shouldEqual 'a'
     m.scalaToJava('b') shouldEqual Character.valueOf('b')
   }
 
   it should "support mapping between Java BigDecimal and BigDecimal" in {
-    val m = implicitly[JavaTypeMapper[JavaBigDecimal, BigDecimal]]
+    val m = JavaTypeMapper[JavaBigDecimal, BigDecimal]
 
     m.javaToScala(JavaBigDecimal.valueOf(42)) shouldEqual BigDecimal(42)
     m.scalaToJava(1234) shouldEqual JavaBigDecimal.valueOf(1234)
   }
 
   it should "support mapping between BigInteger and BigInt" in {
-    val m = implicitly[JavaTypeMapper[BigInteger, BigInt]]
+    val m = JavaTypeMapper[BigInteger, BigInt]
 
     m.javaToScala(BigInteger.valueOf(223322)) shouldEqual BigInt(223322)
     m.scalaToJava(4321) shouldEqual BigInteger.valueOf(4321)
   }
 
   it should "throw NPE if Java number class is null" in {
-    val m = implicitly[JavaTypeMapper[Integer, Int]]
+    val m = JavaTypeMapper[Integer, Int]
     an[NullPointerException] should be thrownBy m.javaToScala(null)
   }
 
   it should "throw NPE if Java BigDecimal is null" in {
-    val m = implicitly[JavaTypeMapper[java.math.BigDecimal, BigDecimal]]
+    val m = JavaTypeMapper[java.math.BigDecimal, BigDecimal]
     an[NullPointerException] should be thrownBy m.scalaToJava(null)
 
   }
 
   it should "support mapping T to Option[T]" in {
-    val m = implicitly[JavaTypeMapper[String, Option[String]]]
+    val m = JavaTypeMapper[String, Option[String]]
 
     m.javaToScala("hello") shouldEqual Some("hello")
     m.scalaToJava(Some("world")) shouldEqual "world"
@@ -87,7 +87,7 @@ class JavaTypeMapperTest extends FlatSpec with Matchers {
   }
 
   it should "support mapping T to Option[U]" in {
-    val m = implicitly[JavaTypeMapper[Integer, Option[Int]]]
+    val m = JavaTypeMapper[Integer, Option[Int]]
 
     m.javaToScala(Integer.valueOf(12345)) shouldEqual Some(12345)
     m.javaToScala(null) shouldEqual None
@@ -97,7 +97,7 @@ class JavaTypeMapperTest extends FlatSpec with Matchers {
   }
 
   it should "support mapping HLists" in {
-    val m = implicitly[JavaTypeMapper[Integer :: String :: java.lang.Double :: HNil, Int :: String :: Option[Double] :: HNil]]
+    val m = JavaTypeMapper[Integer :: String :: java.lang.Double :: HNil, Int :: String :: Option[Double] :: HNil]
 
     m.javaToScala(Integer.valueOf(42) :: "test me" :: java.lang.Double.valueOf(33d) :: HNil) shouldEqual 42 :: "test me" :: Some(33d) :: HNil
     m.javaToScala(Integer.valueOf(142) :: null :: null :: HNil) shouldEqual 142 :: null :: None :: HNil

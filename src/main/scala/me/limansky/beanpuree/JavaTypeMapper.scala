@@ -24,6 +24,8 @@ trait JavaTypeMapper[J, S] {
 }
 
 object JavaTypeMapper {
+  def apply[J, S](implicit m: JavaTypeMapper[J, S]): JavaTypeMapper[J, S] = m
+
   implicit val integerMapper: JavaTypeMapper[Integer, Int] = of(_.intValue, Integer.valueOf)
 
   implicit val longMapper: JavaTypeMapper[java.lang.Long, Long] = of(_.longValue, java.lang.Long.valueOf)
