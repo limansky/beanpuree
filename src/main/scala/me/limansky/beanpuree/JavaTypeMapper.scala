@@ -16,14 +16,21 @@
 
 package me.limansky.beanpuree
 
+import shapeless.labelled.FieldType
 import shapeless.{::, HList, Lazy}
+import shapeless.labelled.field
 
 trait JavaTypeMapper[J, S] {
   def javaToScala(j: J): S
   def scalaToJava(s: S): J
 }
 
-object JavaTypeMapper {
+trait LowPriorityJavaTypeMapper {
+  implicit def dummyMapper[T]: JavaTypeMapper[T, T] = JavaTypeMapper.of(identity, identity)
+
+}
+
+object JavaTypeMapper extends LowPriorityJavaTypeMapper {
   def apply[J, S](implicit m: JavaTypeMapper[J, S]): JavaTypeMapper[J, S] = m
 
   implicit val integerMapper: JavaTypeMapper[Integer, Int] = of(_.intValue, Integer.valueOf)
@@ -38,7 +45,10 @@ object JavaTypeMapper {
 
   implicit val charMapper: JavaTypeMapper[Character, Char] = of(_.charValue, Character.valueOf)
 
-  implicit def dummyMapper[T]: JavaTypeMapper[T, T] = of(identity, identity)
+  implicit def fieldMapper[K, J, S](implicit m: JavaTypeMapper[J, S]): JavaTypeMapper[FieldType[K, J], FieldType[K, S]] = of(
+    j => field[K](m.javaToScala(j)),
+    s => field[K](m.scalaToJava(s))
+  )
 
   implicit def nullableToMappedOption[J >: Null, S](implicit inner: JavaTypeMapper[J, S]): JavaTypeMapper[J, Option[S]] = of(
     x => Option(x).map(inner.javaToScala),
@@ -48,15 +58,10 @@ object JavaTypeMapper {
   implicit def hconsMapper[JH, JT <: HList, SH, ST <: HList](implicit
     hMapper: Lazy[JavaTypeMapper[JH, SH]],
     tMapper: JavaTypeMapper[JT, ST]
-  ): JavaTypeMapper[JH :: JT, SH :: ST] = new JavaTypeMapper[JH :: JT, SH :: ST] {
-    override def javaToScala(j: JH :: JT): SH :: ST = {
-      hMapper.value.javaToScala(j.head) :: tMapper.javaToScala(j.tail)
-    }
-
-    override def scalaToJava(s: SH :: ST): JH :: JT = {
-      hMapper.value.scalaToJava(s.head) :: tMapper.scalaToJava(s.tail)
-    }
-  }
+  ): JavaTypeMapper[JH :: JT, SH :: ST] = of(
+    j => hMapper.value.javaToScala(j.head) :: tMapper.javaToScala(j.tail),
+    s => hMapper.value.scalaToJava(s.head) :: tMapper.scalaToJava(s.tail)
+  )
 
   def of[J, S](jts: J => S, stj: S => J): JavaTypeMapper[J, S] = new JavaTypeMapper[J, S] {
     override def javaToScala(j: J): S = jts(j)

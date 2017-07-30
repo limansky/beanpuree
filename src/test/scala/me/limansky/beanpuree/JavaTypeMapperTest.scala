@@ -16,10 +16,10 @@
 
 package me.limansky.beanpuree
 
-import java.math.{ BigInteger, BigDecimal => JavaBigDecimal }
+import java.math.{BigInteger, BigDecimal => JavaBigDecimal}
 
 import org.scalatest.{FlatSpec, Matchers}
-import shapeless.{::, HNil}
+import shapeless.{::, HNil, LabelledGeneric}
 
 class JavaTypeMapperTest extends FlatSpec with Matchers {
 
@@ -104,5 +104,18 @@ class JavaTypeMapperTest extends FlatSpec with Matchers {
 
     m.scalaToJava(212 :: "abc" :: Some(13.33) :: HNil) shouldEqual Integer.valueOf(212) :: "abc" :: 13.33 :: HNil
     m.scalaToJava(222 :: null :: None :: HNil) shouldEqual Integer.valueOf(222) :: null :: null :: HNil
+  }
+
+  it should "support mapping labelled HLists" in {
+    import shapeless.record._
+    import shapeless.syntax.singleton._
+
+    type JavaHList = Record.`'x -> String, 'y -> Integer`.T
+    type ScalaHList = Record.`'x -> String, 'y -> Int`.T
+
+    val m = JavaTypeMapper[JavaHList, ScalaHList]
+
+    m.javaToScala(('x ->> "hello") :: ('y ->> Integer.valueOf(123)) :: HNil) shouldEqual ('x ->> "hello") :: ('y ->> 123) :: HNil
+    m.scalaToJava(('x ->> "world") :: ('y ->> 42) :: HNil) shouldEqual ('x ->> "world") :: ('y ->> Integer.valueOf(42)) :: HNil
   }
 }
