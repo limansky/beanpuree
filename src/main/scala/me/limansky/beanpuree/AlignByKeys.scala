@@ -18,30 +18,31 @@ package me.limansky.beanpuree
 
 import shapeless.ops.record.Remover
 import shapeless.{::, DepFn1, HList, HNil}
+import shapeless.labelled.{FieldType, field}
 
-trait AlignByName[T <: HList, K <: HList] extends DepFn1[T] {
+trait AlignByKeys[T <: HList, K <: HList] extends DepFn1[T] {
   override type Out <: HList
 }
 
-object AlignByName {
-  type Aux[T <: HList, K <: HList, O] = AlignByName[T, K] { type Out = O}
+object AlignByKeys {
+  type Aux[T <: HList, K <: HList, O] = AlignByKeys[T, K] { type Out = O}
 
-  def apply[T <: HList, K <: HList](implicit ev: AlignByName[T, K]): AlignByName[T, K] = ev
+  def apply[T <: HList, K <: HList](implicit ev: AlignByKeys[T, K]): Aux[T, K, ev.Out] = ev
 
-  implicit val hnilAlign: AlignByName[HNil, HNil] = new AlignByName[HNil, HNil] {
+  implicit val hnilAlign: AlignByKeys[HNil, HNil] = new AlignByKeys[HNil, HNil] {
     override type Out = HNil
     override def apply(t: HNil): HNil = HNil
   }
 
   implicit def hlistAling[T <: HList, KH, KT <: HList, V, R <: HList, TA <: HList](implicit
     remover: Remover.Aux[T, KH, (V, R)],
-    tailAlign: AlignByName.Aux[R, KT, TA]
-  ): AlignByName[T, KH :: KT] = new AlignByName[T, KH :: KT] {
-    override type Out = V :: TA
+    tailAlign: AlignByKeys.Aux[R, KT, TA]
+  ): Aux[T, KH :: KT, FieldType[KH, V] :: TA] = new AlignByKeys[T, KH :: KT] {
+    override type Out = FieldType[KH, V] :: TA
 
-    override def apply(t: T): V :: TA = {
+    override def apply(t: T): FieldType[KH, V] :: TA = {
       val (v, r) = remover(t)
-      v :: tailAlign(r)
+      field[KH](v) :: tailAlign(r)
     }
   }
 }
