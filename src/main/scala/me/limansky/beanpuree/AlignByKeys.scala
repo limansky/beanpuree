@@ -29,7 +29,7 @@ object AlignByKeys {
 
   def apply[T <: HList, K <: HList](implicit ev: AlignByKeys[T, K]): Aux[T, K, ev.Out] = ev
 
-  implicit val hnilAlign: AlignByKeys[HNil, HNil] = new AlignByKeys[HNil, HNil] {
+  implicit val hnilAlign: Aux[HNil, HNil, HNil] = new AlignByKeys[HNil, HNil] {
     override type Out = HNil
     override def apply(t: HNil): HNil = HNil
   }
