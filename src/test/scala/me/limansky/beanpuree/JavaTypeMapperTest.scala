@@ -19,7 +19,9 @@ package me.limansky.beanpuree
 import java.math.{BigInteger, BigDecimal => JavaBigDecimal}
 
 import org.scalatest.{FlatSpec, Matchers}
-import shapeless.{::, HNil, LabelledGeneric}
+import shapeless.record._
+import shapeless.syntax.singleton._
+import shapeless.{::, HNil}
 
 class JavaTypeMapperTest extends FlatSpec with Matchers {
 
@@ -107,9 +109,6 @@ class JavaTypeMapperTest extends FlatSpec with Matchers {
   }
 
   it should "support mapping labelled HLists" in {
-    import shapeless.record._
-    import shapeless.syntax.singleton._
-
     type JavaHList = Record.`'x -> String, 'y -> Integer`.T
     type ScalaHList = Record.`'x -> String, 'y -> Int`.T
 
