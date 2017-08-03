@@ -76,8 +76,30 @@ Another important thing is `LabelledBeanGeneric`, which is a `LabelledGeneric` a
 for the beans.  It's important to note, that it uses "field names" generated from the
 getters names.  E.g.  `getStartTime` become `startTime` and `isEven` become `even`.
 
-The next thing is a `BeanConverter` class.  It uses `LabelledBeanGeneric` and `LabelledGeneric`
-to convert between beans and case classes.
+`JavaTypeMapper[J, S]` provides converters for different Java and Scala classes.
+There are converter instances from Java numeric classes to corresponding Scala ones.
+It also can convert nullable value to `Option`.  You can convert `HList`s of convertable
+values as well.
+
+```Scala
+scala> type JavaType = Integer :: String :: java.lang.Long :: HNil
+defined type alias JavaType
+
+scala> type ScalaType = Int :: String :: Option[Long] :: HNil
+defined type alias ScalaType
+
+scala> val m = JavaTypeMapper[JavaType, ScalaType]
+m: me.limansky.beanpuree.JavaTypeMapper[JavaType,ScalaType] = me.limansky.beanpuree.JavaTypeMapper$$anon$1@41bbc4c4
+
+scala> m.javaToScala(6 :: "test" :: null :: HNil)
+res0: ScalaType = 6 :: test :: None :: HNil
+
+scala> m.scalaToJava(42 :: null :: Some(66l) :: HNil)
+res1: JavaType = 42 :: null :: 66 :: HNil
+```
+
+The next thing is a `BeanConverter` and `StrictBeanConverter` classes.  They use
+`LabelledBeanGeneric` and `LabelledGeneric` to convert between beans and case classes.
 
 ```Scala
 scala> case class Bar(a: Int, b: String)
@@ -93,9 +115,15 @@ scala> conv.productToBean(Bar(15, "bar"))
 res4: Foo = Foo(15, "bar")
 ```
 
-`BeanConverter` doesn't care about fields order, but requires to have all the
-same fields with the same types.  It also mean that if the bean uses Java
+The converters doesn't care about fields order.  The difference between these two
+classes is that `StrictBeanConverter` requires the same fields of  converting classes
+having the same types.  It means that if the bean uses Java
 numeric classes (like java.lang.Integer), the case class also should have the
 field with Java class.
+
+`BeanConverter` is more intelligent.  It uses `JavaTypeMapper` to convert field types.
+You should be careful using it.  For example if you have an Integer field in Java class
+and Int in Scala, you might get a NullPointerException if the value is null.  Use `Option[Int]`
+to make it safe.
 
 [shapeless]: http://github.com/milessabin/shapeless
