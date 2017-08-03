@@ -16,35 +16,31 @@
 
 package me.limansky.beanpuree
 
-import shapeless.ops.hlist.Align
 import shapeless.{HList, LabelledGeneric}
+import shapeless.ops.record.Keys
 
-/**
-  * Converts bean to product type (case class) and backwards.
-  *
-  * Doesn't care about fields order. Only requires that the fields have same type and same name.
-  *
-  * @see [[LabelledBeanGeneric]]
-  * @tparam B bean type
-  * @tparam P product type type
-  */
 trait BeanConverter[B, P] {
-  /** Converts product instance to bean */
   def productToBean(p: P): B
-  /** Converts bean instance to product */
   def beanToProduct(b: B): P
 }
 
 object BeanConverter {
-  def apply[B, S](implicit beanConverter: BeanConverter[B, S]): BeanConverter[B, S] = beanConverter
 
-  implicit def converter[B, P, BR <: HList, PR <: HList](implicit
+  def apply[B, P](implicit sbc: BeanConverter[B, P]): BeanConverter[B, P] = sbc
+
+  implicit def converter[B, BR <: HList, BK <: HList, BA <: HList, P, PR <: HList, PK <: HList](implicit
     gen: LabelledGeneric.Aux[P, PR],
+    pKeys: Keys.Aux[PR, PK],
     bgen: LabelledBeanGeneric.Aux[B, BR],
-    align: Align[BR, PR],
-    revAlign: Align[PR, BR]
+    bKeys: Keys.Aux[BR, BK],
+    align: AlignByKeys.Aux[BR, PK, BA],
+    mapper: JavaTypeMapper[BA, PR],
+    revAlign: AlignByKeys.Aux[BA, BK, BR]
   ): BeanConverter[B, P] = new BeanConverter[B, P] {
-    override def productToBean(p: P): B = bgen.from(revAlign(gen.to(p)))
-    override def beanToProduct(b: B): P = gen.from(align(bgen.to(b)))
+
+    override def productToBean(p: P): B = bgen.from(revAlign(mapper.scalaToJava(gen.to(p))))
+
+    override def beanToProduct(b: B): P = gen.from(mapper.javaToScala(align(bgen.to(b))))
   }
+
 }

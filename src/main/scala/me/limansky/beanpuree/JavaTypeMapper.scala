@@ -27,7 +27,6 @@ trait JavaTypeMapper[J, S] {
 
 trait LowPriorityJavaTypeMapper {
   implicit def dummyMapper[T]: JavaTypeMapper[T, T] = JavaTypeMapper.of(identity, identity)
-
 }
 
 object JavaTypeMapper extends LowPriorityJavaTypeMapper {
@@ -44,6 +43,8 @@ object JavaTypeMapper extends LowPriorityJavaTypeMapper {
   implicit val bigIntegerMapper: JavaTypeMapper[java.math.BigInteger, BigInt] = of(BigInt.apply, _.underlying)
 
   implicit val charMapper: JavaTypeMapper[Character, Char] = of(_.charValue, Character.valueOf)
+
+  implicit val booleanMapper: JavaTypeMapper[java.lang.Boolean, Boolean] = of(_.booleanValue, new java.lang.Boolean(_))
 
   implicit def fieldMapper[K, J, S](implicit m: JavaTypeMapper[J, S]): JavaTypeMapper[FieldType[K, J], FieldType[K, S]] = of(
     j => field[K](m.javaToScala(j)),

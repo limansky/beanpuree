@@ -19,3 +19,7 @@ package me.limansky.beanpuree
 case class TestProduct(count: Int, string: String, amount: java.lang.Long, enabled: Boolean)
 
 case class TestProductDisordered(string: String, amount: java.lang.Long, count: Int, enabled: Boolean)
+
+case class TestProductScala(count: Int, string: String, amount: Option[Long], enabled: Boolean)
+
+case class TestProductScalaDisordered(string: Option[String], enabled: Boolean, amount: Long, count: Int)
