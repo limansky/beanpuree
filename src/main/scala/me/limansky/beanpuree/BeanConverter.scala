@@ -19,8 +19,20 @@ package me.limansky.beanpuree
 import shapeless.{HList, LabelledGeneric}
 import shapeless.ops.record.Keys
 
+/**
+  * Converts bean to product type (case class) and backwards.
+  *
+  * Doesn't care about fields order. The fields have to have compatible types.
+  *
+  * @see [[LabelledBeanGeneric]], [[JavaTypeMapper]]
+  * @tparam B bean type
+  * @tparam P product type type
+  */
 trait BeanConverter[B, P] {
+  /** Converts product instance to bean */
   def productToBean(p: P): B
+
+  /** Converts bean instance to product */
   def beanToProduct(b: B): P
 }
 

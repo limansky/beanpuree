@@ -20,8 +20,24 @@ import shapeless.labelled.FieldType
 import shapeless.{::, HList, Lazy}
 import shapeless.labelled.field
 
+/**
+  * Converter between Java and Scala types.
+  *
+  * Built in instances to convert Java Integer, Long, Float, Double, BigDecimal, BigInteger,
+  * Character, Boolean to corresponding Scala types are provided.  If the Java value is null,
+  * throws a NullPointerException.  There is a converter from any type which can be mapped to
+  * [[Option]].  For example you can map `Integer` to `Option[Int]`, or `String` to Option[String].
+  *
+  * It also supports [[HList]]s. E.g. you can convert `Integer :: String :: HNil` to
+  * `Option[Int] :: String :: HNil`.
+  *
+  * @tparam J Java type
+  * @tparam S Scala type
+  */
 trait JavaTypeMapper[J, S] {
+  /** Converts from J to S */
   def javaToScala(j: J): S
+  /** Converts from S to J */
   def scalaToJava(s: S): J
 }
 
@@ -39,6 +55,8 @@ object JavaTypeMapper extends LowPriorityJavaTypeMapper {
   implicit val doubleMapper: JavaTypeMapper[java.lang.Double, Double] = of(_.doubleValue, java.lang.Double.valueOf)
 
   implicit val bigDecimalMapper: JavaTypeMapper[java.math.BigDecimal, BigDecimal] = of(BigDecimal.apply, _.underlying)
+
+  implicit val floatMapper: JavaTypeMapper[java.lang.Float, Float] = of(_.floatValue, java.lang.Float.valueOf)
 
   implicit val bigIntegerMapper: JavaTypeMapper[java.math.BigInteger, BigInt] = of(BigInt.apply, _.underlying)
 
