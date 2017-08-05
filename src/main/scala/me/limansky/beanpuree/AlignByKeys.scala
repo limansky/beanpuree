@@ -20,7 +20,7 @@ import shapeless.ops.record.Remover
 import shapeless.{::, DepFn1, HList, HNil}
 import shapeless.labelled.{FieldType, field}
 
-trait AlignByKeys[T <: HList, K <: HList] extends DepFn1[T] {
+trait AlignByKeys[T <: HList, K <: HList] extends DepFn1[T] with Serializable {
   override type Out <: HList
 }
 
@@ -34,7 +34,7 @@ object AlignByKeys {
     override def apply(t: HNil): HNil = HNil
   }
 
-  implicit def hlistAling[T <: HList, KH, KT <: HList, V, R <: HList, TA <: HList](implicit
+  implicit def hlistAlign[T <: HList, KH, KT <: HList, V, R <: HList, TA <: HList](implicit
     remover: Remover.Aux[T, KH, (V, R)],
     tailAlign: AlignByKeys.Aux[R, KT, TA]
   ): Aux[T, KH :: KT, FieldType[KH, V] :: TA] = new AlignByKeys[T, KH :: KT] {
