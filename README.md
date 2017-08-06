@@ -25,7 +25,7 @@ BeanPurée is available for Scala 2.10, 2.11 and 2.12.  Currently there is no
 release version.  Adding in `sbt`:
 
 ```Scala
-libraryDependencies += "me.limansky" %% "beanpuree" % "0.1"
+libraryDependencies += "me.limansky" %% "beanpuree" % "0.2"
 ```
 
 If you'd like to use development version:
@@ -33,7 +33,7 @@ If you'd like to use development version:
 ```Scala
 resolvers += Resolver.sonatypeRepo("snapshots")
 
-libraryDependencies += "me.limansky" %% "beanpuree" % "0.2-SNAPSHOT"
+libraryDependencies += "me.limansky" %% "beanpuree" % "0.3-SNAPSHOT"
 ```
 
 The core of BeanPurée is `BeanGeneric` class, which have a same role with
