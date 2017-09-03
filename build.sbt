@@ -72,7 +72,7 @@ lazy val releaseSettings = Seq(
     publishArtifacts,
     setNextVersion,
     commitNextVersion,
-    ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
+    releaseStepCommand("sonatypeReleaseAll"),
     pushChanges
   )
 )
