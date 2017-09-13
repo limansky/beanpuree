@@ -31,4 +31,10 @@ class BeanLabellingTest extends FlatSpec with Matchers {
 
     lab() shouldEqual 'y :: HNil
   }
+
+  it should "ignore non-public methods" in {
+    val lab = BeanLabelling[BeanWithPrivate]
+
+    lab() shouldEqual 'a :: HNil
+  }
 }

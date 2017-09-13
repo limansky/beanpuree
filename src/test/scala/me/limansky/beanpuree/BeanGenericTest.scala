@@ -56,4 +56,16 @@ class BeanGenericTest extends FlatSpec with Matchers {
 
     gen.to(bean) shouldEqual 6 :: HNil
   }
+
+  it should "aware of public methods only" in {
+    val gen = BeanGeneric[BeanWithPrivate]
+    val bean = new BeanWithPrivate
+    bean.setA(6)
+    bean.setS("test me")
+
+    gen.to(bean) shouldEqual 6 :: HNil
+
+    val bean2 = gen.from(10 :: HNil)
+    bean2.getA shouldEqual 10
+  }
 }

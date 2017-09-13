@@ -69,7 +69,7 @@ trait BeanUtils { self: CaseClassMacros =>
 
   def gettersAndSetters(tpe: Type): (List[MethodSymbol], List[MethodSymbol]) = {
     val methods = tpe.decls.toList collect {
-      case sym: MethodSymbol if sym.isMethod => sym
+      case sym: MethodSymbol if sym.isMethod && sym.isPublic => sym
     }
 
     val byName = methods.map(s => s.name.toString -> s).toMap
