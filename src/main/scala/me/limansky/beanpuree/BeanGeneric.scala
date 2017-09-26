@@ -46,7 +46,7 @@ import scala.reflect.macros.whitebox
   * @tparam B the bean type
   */
 trait BeanGeneric[B] {
-  /** Generic representation type {B} ([[shapeless.HList]] */
+  /** Generic representation type {B} ([[shapeless.HList]]) */
   type Repr
 
   /** Converts bean to generic representation. */
