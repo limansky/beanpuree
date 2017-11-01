@@ -95,8 +95,8 @@ class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with Be
     val rtpe = beanReprTypTree(tpe)
     val ctorDtor = BeanCtorDtor(tpe)
 
-    val (p, ts) = ctorDtor.binding
-    val to = cq""" $p => ${mkHListValue(ts)} """
+    val b = TermName(c.freshName("bean"))
+    val to = ctorDtor.deconstruct(b)
 
     val (rp, rts) = ctorDtor.reprBinding
     val from = cq" $rp => ${ctorDtor.construct(rts)} "
@@ -104,7 +104,7 @@ class BeanGenericMacros(val c: whitebox.Context) extends CaseClassMacros with Be
     q"""
       new _root_.me.limansky.beanpuree.BeanGeneric[$tpe] {
         override type Repr = $rtpe
-        override def to(b: $tpe): Repr = (b match { case $to }).asInstanceOf[Repr]
+        override def to($b: $tpe): Repr = $to
         override def from(r: Repr): $tpe = r match { case $from }
       }: _root_.me.limansky.beanpuree.BeanGeneric.Aux[$tpe, $rtpe]
     """

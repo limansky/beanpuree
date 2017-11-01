@@ -38,12 +38,17 @@ trait BeanUtils { self: CaseClassMacros =>
     }
   }
 
+  trait BeanCtorDtor {
+    def construct(args: List[Tree]): Tree
+    def deconstruct(bean: TermName): Tree
+    def reprBinding: (Tree, List[Tree])
+  }
+
   object BeanCtorDtor {
-    def apply(tpe: Type): CtorDtor = {
+    def apply(tpe: Type): BeanCtorDtor = {
 
       val (gs, ss) = gettersAndSetters(tpe)
 
-      val bean = TermName(c.freshName("bean"))
       val elems = gs.map(_ => TermName(c.freshName("pat")))
 
       val reprPattern =
@@ -51,8 +56,9 @@ trait BeanUtils { self: CaseClassMacros =>
           case (bound, acc) => pq"_root_.shapeless.::($bound, $acc)"
         }
 
-      new CtorDtor {
+      new BeanCtorDtor {
         def construct(args: List[Tree]): Tree = {
+          val bean = TermName(c.freshName("bean"))
           val setters = ss.zip(args).map { case (s, a) => q"$bean.$s($a)" }
 
           q"""
@@ -61,7 +67,9 @@ trait BeanUtils { self: CaseClassMacros =>
             $bean
           """
         }
-        def binding: (Tree, List[Tree]) = (pq"$bean", gs.map(g => q"$bean.$g"))
+
+        def deconstruct(bean: TermName): Tree = mkHListValue(gs.map(g => q"$bean.$g"))
+
         def reprBinding: (Tree, List[Tree]) = (reprPattern, elems.map(e => q"$e"))
       }
     }
