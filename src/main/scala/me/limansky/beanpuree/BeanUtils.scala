@@ -25,7 +25,7 @@ trait BeanUtils { self: CaseClassMacros =>
   case class Field(name: String, getter: MethodSymbol, setter: MethodSymbol)
 
   def beanReprTypTree(tpe: Type): Tree = {
-    mkHListTypTree(propsOf(tpe).map(_._2))
+    mkHListTypTree(beanFields(tpe).map(_.getter.typeSignatureIn(tpe).finalResultType))
   }
 
   object Getter {
@@ -96,10 +96,6 @@ trait BeanUtils { self: CaseClassMacros =>
     })
 
     getters.map { case (name, getter) => Field(firstLower(name), getter, byName("set" + name))}
-  }
-
-  def propsOf(tpe: Type): List[(TermName, Type)] = {
-    beanFields(tpe).map(f => (TermName(f.name), f.getter.typeSignatureIn(tpe).finalResultType))
   }
 
   def isBean(tpe: Type): Boolean = {

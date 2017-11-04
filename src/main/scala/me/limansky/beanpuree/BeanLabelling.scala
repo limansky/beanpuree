@@ -45,7 +45,7 @@ class BeanLabellingMacros(val c: whitebox.Context) extends SingletonTypeUtils wi
 
     if (!isBean(tpe)) abort(s"$tpe is not a bean")
 
-    val labels = propsOf(tpe).map(f => nameAsString(f._1))
+    val labels = beanFields(tpe).map(_.name)
 
     val labelTypes = labels.map(SingletonSymbolType(_))
     val labelValues = labels.map(mkSingletonSymbol)
