@@ -22,12 +22,14 @@ import shapeless.CaseClassMacros
 trait BeanUtils { self: CaseClassMacros =>
   import c.universe._
 
+  case class Field(name: String, getter: MethodSymbol, setter: MethodSymbol)
+
   def beanReprTypTree(tpe: Type): Tree = {
     mkHListTypTree(propsOf(tpe).map(_._2))
   }
 
   object Getter {
-    val getterPattern = "^(is|get)(.+)".r
+    private val getterPattern = "^(is|get)(.+)".r
     def unapply(sym: MethodSymbol): Option[(String, MethodSymbol)] = {
       if (sym.paramLists.isEmpty || sym.paramLists == List(List())) {
         val nameStr = sym.name.toString
@@ -47,9 +49,9 @@ trait BeanUtils { self: CaseClassMacros =>
   object BeanCtorDtor {
     def apply(tpe: Type): BeanCtorDtor = {
 
-      val (gs, ss) = gettersAndSetters(tpe)
+      val fs = beanFields(tpe)
 
-      val elems = gs.map(_ => TermName(c.freshName("pat")))
+      val elems = fs.map(_ => TermName(c.freshName("pat")))
 
       val reprPattern =
         elems.foldRight(q"_root_.shapeless.HNil": Tree) {
@@ -59,7 +61,7 @@ trait BeanUtils { self: CaseClassMacros =>
       new BeanCtorDtor {
         def construct(args: List[Tree]): Tree = {
           val bean = TermName(c.freshName("bean"))
-          val setters = ss.zip(args).map { case (s, a) => q"$bean.$s($a)" }
+          val setters = fs.zip(args).map { case (Field(_, _, s), a) => q"$bean.$s($a)" }
 
           q"""
             val $bean = new $tpe
@@ -68,14 +70,14 @@ trait BeanUtils { self: CaseClassMacros =>
           """
         }
 
-        def deconstruct(bean: TermName): Tree = mkHListValue(gs.map(g => q"$bean.$g"))
+        def deconstruct(bean: TermName): Tree = mkHListValue(fs.map(f => q"$bean.${f.getter}"))
 
         def reprBinding: (Tree, List[Tree]) = (reprPattern, elems.map(e => q"$e"))
       }
     }
   }
 
-  def gettersAndSetters(tpe: Type): (List[MethodSymbol], List[MethodSymbol]) = {
+  def beanFields(tpe: Type): List[Field] = {
     val methods = tpe.decls.toList collect {
       case sym: MethodSymbol if sym.isMethod && sym.isPublic => sym
     }
@@ -93,15 +95,11 @@ trait BeanUtils { self: CaseClassMacros =>
         })
     })
 
-    val setters = getters.map(x => byName("set" + x._1))
-    (getters.map(_._2), setters)
+    getters.map { case (name, getter) => Field(firstLower(name), getter, byName("set" + name))}
   }
 
   def propsOf(tpe: Type): List[(TermName, Type)] = {
-    val (getters, _) = gettersAndSetters(tpe)
-    getters.map {
-      case Getter(name, sym) => (TermName(name.head.toLower + name.tail), sym.typeSignatureIn(tpe).finalResultType)
-    }
+    beanFields(tpe).map(f => (TermName(f.name), f.getter.typeSignatureIn(tpe).finalResultType))
   }
 
   def isBean(tpe: Type): Boolean = {
@@ -109,5 +107,9 @@ trait BeanUtils { self: CaseClassMacros =>
     !isReprType(tpe) &&
       !sym.isAbstract &&
       tpe.decls.exists(x => x.isConstructor && x.isPublic && x.typeSignature.paramLists == List(List()))
+  }
+
+  private def firstLower(s: String): String = {
+    if (s.isEmpty) s else s.head.toLower + s.tail
   }
 }
