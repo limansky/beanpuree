@@ -22,22 +22,29 @@ import shapeless.CaseClassMacros
 trait BeanUtils { self: CaseClassMacros =>
   import c.universe._
 
+  private val getterPattern = "^(is|get)(.+)".r
+
   case class Field(name: String, getter: MethodSymbol, setter: MethodSymbol)
 
   def beanReprTypTree(tpe: Type): Tree = {
     mkHListTypTree(beanFields(tpe).map(_.getter.typeSignatureIn(tpe).finalResultType))
   }
 
-  object Getter {
-    private val getterPattern = "^(is|get)(.+)".r
-    def unapply(sym: MethodSymbol): Option[(String, MethodSymbol)] = {
-      if (sym.paramLists.isEmpty || sym.paramLists == List(List())) {
-        val nameStr = sym.name.toString
-        for {
-          getterPattern(_, name) <- getterPattern.findFirstIn(nameStr)
-        } yield (name, sym)
-      } else None
-    }
+  def mayBeGetter(sym: MethodSymbol): Option[(String, MethodSymbol)] = {
+    if (sym.paramLists.isEmpty || sym.paramLists == List(List())) {
+      val nameStr = sym.name.toString
+      for {
+        getterPattern(_, name) <- getterPattern.findFirstIn(nameStr)
+      } yield (name, sym)
+    } else None
+  }
+
+  def isSetter(sym: MethodSymbol, expectedTpe: Type): Boolean = {
+    sym.typeSignature.finalResultType =:= typeOf[Unit] &&
+      (sym.paramLists match {
+        case List(List(t)) => t.typeSignature =:= expectedTpe
+        case _ => false
+      })
   }
 
   trait BeanCtorDtor {
@@ -84,16 +91,11 @@ trait BeanUtils { self: CaseClassMacros =>
 
     val byName = methods.map(s => s.name.toString -> s).toMap
 
-    val getters = methods.collect {
-      case Getter(x @ (_, _)) => x
-    }.filter(x => byName.exists { case (name, sym) =>
-      name == "set" + x._1 &&
-        sym.typeSignature.finalResultType =:= typeOf[Unit] &&
-        (sym.paramLists match {
-          case List(List(t)) => t.typeSignature =:= x._2.typeSignature.finalResultType
-          case _ => false
-        })
-    })
+    val getters = methods
+      .flatMap(mayBeGetter)
+      .filter(x => byName.get("set" + x._1)
+        .exists(sym => isSetter(sym, x._2.typeSignatureIn(tpe).finalResultType))
+      )
 
     getters.map { case (name, getter) => Field(firstLower(name), getter, byName("set" + name))}
   }
