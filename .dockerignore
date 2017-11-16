@@ -1,0 +1,7 @@
+**/target
+*.md
+.dockerignore
+.git
+.gitignore
+.travis.yml
+Dockerfile
