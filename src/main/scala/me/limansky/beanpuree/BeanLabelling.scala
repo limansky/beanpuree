@@ -48,12 +48,10 @@ class BeanLabellingMacros(val c: whitebox.Context) extends SingletonTypeUtils wi
     val labels = beanFields(tpe).map(_.name)
 
     val labelTypes = labels.map(SingletonSymbolType(_))
-    val labelValues = labels.map(mkSingletonSymbol)
-
     val labelsType = mkHListTpe(labelTypes)
-    val labelsValue = labelValues.foldRight(q"_root_.shapeless.HNil": Tree) {
-      case (elem, acc) => q"_root_.shapeless.::($elem, $acc)"
-    }
+
+    val labelValues = labels.map(mkSingletonSymbol)
+    val labelsValue = mkHListValue(labelValues)
 
     q"""
        new _root_.me.limansky.beanpuree.BeanLabelling[$tpe] {
