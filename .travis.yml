@@ -1,16 +1,7 @@
-language: scala
-scala:
-  - 2.12.4
-  - 2.11.12
-  - 2.10.7
-jdk:
-  - oraclejdk8
-
-branches:
-  only: master
-
+sudo: required
+services:
+  - docker
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean coverage test coverageReport
-
+  - ./test.sh
 after_success:
   - bash <(curl -s https://codecov.io/bash)
