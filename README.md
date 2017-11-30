@@ -21,7 +21,7 @@ helps to convert data between JavaBeans and case classes.
 
 ## Usage
 
-BeanPurée is available for Scala 2.10, 2.11 and 2.12.  Currently there is no
+BeanPurée is available for Scala 2.10, 2.11, 2.12, and 2.13.0-M2.  Currently there is no
 release version.  Adding in `sbt`:
 
 ```Scala
