@@ -26,9 +26,9 @@ import shapeless.labelled.field
   * Built in instances to convert Java Integer, Long, Float, Double, BigDecimal, BigInteger,
   * Character, Boolean to corresponding Scala types are provided.  If the Java value is null,
   * throws a NullPointerException.  There is a converter from any type which can be mapped to
-  * [[Option]].  For example you can map `Integer` to `Option[Int]`, or `String` to Option[String].
+  * [[scala.Option]].  For example you can map `Integer` to `Option[Int]`, or `String` to Option[String].
   *
-  * It also supports [[HList]]s. E.g. you can convert `Integer :: String :: HNil` to
+  * It also supports [[shapeless.HList]]s. E.g. you can convert `Integer :: String :: HNil` to
   * `Option[Int] :: String :: HNil`.
   *
   * @tparam J Java type
