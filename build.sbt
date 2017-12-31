@@ -9,7 +9,7 @@ lazy val beanPuree = (project in file ("."))
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
     libraryDependencies ++= Seq(
-      "com.chuusai"         %% "shapeless"        % "2.3.2",
+      "com.chuusai"         %% "shapeless"        % "2.3.3",
       "org.typelevel"       %% "macro-compat"     % "1.1.1",
       "org.scala-lang"      % "scala-reflect"     % scalaVersion.value    % Provided,
       "org.scala-lang"      % "scala-compiler"    % scalaVersion.value    % Provided,

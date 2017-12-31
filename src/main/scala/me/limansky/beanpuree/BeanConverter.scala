@@ -17,7 +17,7 @@
 package me.limansky.beanpuree
 
 import shapeless.{HList, LabelledGeneric}
-import shapeless.ops.record.Keys
+import shapeless.ops.record.{AlignByKeys, Keys}
 
 /**
   * Converts bean to product type (case class) and backwards.
