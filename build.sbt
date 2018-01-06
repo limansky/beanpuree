@@ -34,7 +34,7 @@ lazy val publishSettings = Seq(
   licenses += ("Apache 2.0 License", url("http://www.apache.org/licenses/LICENSE-2.0")),
   homepage := Some(url("http://github.com/limansky/beanpuree")),
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/limansky/beanpuree"),
