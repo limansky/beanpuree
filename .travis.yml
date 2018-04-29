@@ -4,7 +4,7 @@ install:
 language: scala
 
 scala:
-  - 2.12.5
+  - 2.12.6
   - 2.13.0-M3
   - 2.11.12
   - 2.10.7
