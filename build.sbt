@@ -3,7 +3,7 @@ import ReleaseTransformations._
 lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
-    scalaVersion := "2.12.5",
+    scalaVersion := "2.12.6",
     crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.6", "2.13.0-M3"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
