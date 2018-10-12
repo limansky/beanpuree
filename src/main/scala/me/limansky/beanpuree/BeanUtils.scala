@@ -108,6 +108,6 @@ trait BeanUtils { self: CaseClassMacros =>
   }
 
   private def firstLower(s: String): String = {
-    if (s.isEmpty) s else s.head.toLower + s.tail
+    if (s.isEmpty) s else s.head.toLower +: s.tail
   }
 }
