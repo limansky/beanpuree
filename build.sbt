@@ -4,7 +4,7 @@ lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
     scalaVersion := "2.12.7",
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.7", "2.13.0-M5"),
+    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-M5"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
@@ -13,7 +13,7 @@ lazy val beanPuree = (project in file ("."))
       "org.typelevel"       %% "macro-compat"     % "1.1.1",
       "org.scala-lang"      % "scala-reflect"     % scalaVersion.value    % Provided,
       "org.scala-lang"      % "scala-compiler"    % scalaVersion.value    % Provided,
-      "org.scalatest"       %% "scalatest"        % "3.0.6-SNAP4"         % Test
+      "org.scalatest"       %% "scalatest"        % "3.0.6-SNAP6"         % Test
     ) ++ {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, 10)) => Seq(
@@ -39,8 +39,7 @@ lazy val publishSettings = Seq(
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/limansky/beanpuree"),
-      "scm:git:https://github.com/limansky/beanpuree.git",
-      Some("scm:git:git@github.com:limansky/beanpuree.git")
+      "scm:git:git@github.com/limansky/beanpuree.git"
     )
   ),
   publishTo := {
@@ -50,13 +49,9 @@ lazy val publishSettings = Seq(
     else
       Some("releases" at nexus + "service/local/staging/deploy/maven2")
   },
-  pomExtra := <developers>
-    <developer>
-      <id>limansky</id>
-      <name>Mike Limansky</name>
-      <url>http://github.com/limansky</url>
-    </developer>
-  </developers>
+  developers := List(
+    Developer("limansky", "Mike Limansky", "mike.limansky@gmail.com", url("http://github.com/limansky"))
+  )
 )
 
 lazy val releaseSettings = Seq(
