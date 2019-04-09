@@ -30,13 +30,13 @@ class LabelledBeanGenericTest extends FlatSpec with Matchers {
     bean.setString("451")
     bean.setAmount(5L)
 
-    gen.to(bean) shouldEqual 'count ->> 4 :: 'string ->> "451" :: 'amount ->> java.lang.Long.valueOf(5) :: 'enabled ->> true :: HNil
+    gen.to(bean) shouldEqual Symbol("count") ->> 4 :: Symbol("string") ->> "451" :: Symbol("amount") ->> java.lang.Long.valueOf(5) :: Symbol("enabled") ->> true :: HNil
   }
 
   it should "convert Repr to bean" in {
     val gen = LabelledBeanGeneric[TestBean]
 
-    val bean = gen.from('count ->> 4 :: 'string ->> "451" :: 'amount ->> java.lang.Long.valueOf(5) :: 'enabled ->> true :: HNil)
+    val bean = gen.from(Symbol("count") ->> 4 :: Symbol("string") ->> "451" :: Symbol("amount") ->> java.lang.Long.valueOf(5) :: Symbol("enabled") ->> true :: HNil)
     bean.getAmount shouldEqual 5L
     bean.getCount shouldEqual 4
     bean.getString shouldEqual "451"
@@ -51,7 +51,7 @@ class LabelledBeanGenericTest extends FlatSpec with Matchers {
     bean.setX(6)
     bean.setY(7)
 
-    gen.to(bean) shouldEqual 'y ->> 7 :: HNil
+    gen.to(bean) shouldEqual Symbol("y") ->> 7 :: HNil
   }
 
   it should "be aware of public methods only" in {
@@ -62,7 +62,7 @@ class LabelledBeanGenericTest extends FlatSpec with Matchers {
     bean.setS("bzzz")
 
     val repr = gen.to(bean)
-    repr shouldEqual 'a ->> 42 :: HNil
+    repr shouldEqual Symbol("a") ->> 42 :: HNil
 
     val bean2 = gen.from(repr)
 

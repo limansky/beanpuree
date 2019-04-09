@@ -4,7 +4,7 @@ lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
     scalaVersion := "2.12.7",
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-M5"),
+    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-RC1"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
@@ -13,7 +13,7 @@ lazy val beanPuree = (project in file ("."))
       "org.typelevel"       %% "macro-compat"     % "1.1.1",
       "org.scala-lang"      % "scala-reflect"     % scalaVersion.value    % Provided,
       "org.scala-lang"      % "scala-compiler"    % scalaVersion.value    % Provided,
-      "org.scalatest"       %% "scalatest"        % "3.0.6"               % Test
+      "org.scalatest"       %% "scalatest"        % "3.0.8-RC2"           % Test
     ) ++ {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, 10)) => Seq(
