@@ -21,19 +21,19 @@ helps to convert data between JavaBeans and case classes.
 
 ## Usage
 
-BeanPurée is available for Scala 2.10, 2.11, 2.12, and 2.13.0-M2.  Currently there is no
+BeanPurée is available for Scala 2.10, 2.11 and 2.12.  Currently there is no
 release version.  Adding in `sbt`:
 
 ```Scala
-libraryDependencies += "me.limansky" %% "beanpuree" % "0.3"
+libraryDependencies += "me.limansky" %% "beanpuree" % "0.4"
 ```
 
-If you'd like to use development version:
+If you'd like to use development version (which is also available for Scala 2.13.0-RC2):
 
 ```Scala
 resolvers += Resolver.sonatypeRepo("snapshots")
 
-libraryDependencies += "me.limansky" %% "beanpuree" % "0.4-SNAPSHOT"
+libraryDependencies += "me.limansky" %% "beanpuree" % "0.5-SNAPSHOT"
 ```
 
 The core of BeanPurée is `BeanGeneric` class, which have a same role with
