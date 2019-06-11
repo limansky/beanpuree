@@ -3,28 +3,37 @@ import ReleaseTransformations._
 lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
-    scalaVersion := "2.12.7",
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-RC2"),
+    scalaVersion := "2.12.8",
+    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
     libraryDependencies ++= Seq(
       "com.chuusai"         %% "shapeless"        % "2.3.3",
-      "org.typelevel"       %% "macro-compat"     % "1.1.1",
       "org.scala-lang"      % "scala-reflect"     % scalaVersion.value    % Provided,
       "org.scala-lang"      % "scala-compiler"    % scalaVersion.value    % Provided,
-      "org.scalatest"       %% "scalatest"        % "3.0.8-RC4"           % Test
+      "org.scalatest"       %% "scalatest"        % "3.0.8"           % Test
     ) ++ {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, 10)) => Seq(
-          "org.scalamacros" %% "quasiquotes" % "2.1.0",
-          compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.patch)
+          "org.scalamacros" %% "quasiquotes"      % "2.1.1",
+          "org.typelevel"   %% "macro-compat"     % "1.1.1",
+          compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.patch)
         )
         case Some((2, x)) if x == 11 || x == 12 => Seq(
           compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.patch)
         )
-        case Some((2, 13)) => Seq()
+        case Some((2, 13)) => Seq.empty
         case _ => sys.error("Unsupported Scala version")
+      }
+    },
+    unmanagedSourceDirectories in Compile ++= {
+      (unmanagedSourceDirectories in Compile).value.filter(_.getName == "scala").flatMap { dir =>
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((2, 10)) => Seq.empty
+          case Some((2, x)) if x >= 11 => Seq(new File(dir.getPath + "-2.11+"))
+          case _ => sys.error("Unsupported Scala version")
+        }
       }
     },
     publishSettings,

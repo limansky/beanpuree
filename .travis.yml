@@ -5,14 +5,11 @@ language: scala
 
 scala:
   - 2.12.8
-  - 2.13.0-RC2
+  - 2.13.0
   - 2.11.12
   - 2.10.7
 jdk:
   - oraclejdk8
-
-branches:
-  only: master
 
 script:
   - scripts/travis-build.sh

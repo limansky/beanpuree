@@ -21,6 +21,8 @@ import shapeless.{CaseClassMacros, DepFn0, HList, SingletonTypeUtils}
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
+import VersionSpecific._
+
 /**
   * Represents ability to extract labels, like [[shapeless.DefaultSymbolicLabelling]] but for JavaBeans.
   *

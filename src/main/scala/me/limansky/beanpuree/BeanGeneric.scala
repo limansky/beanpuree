@@ -21,6 +21,8 @@ import shapeless.CaseClassMacros
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
+import VersionSpecific._
+
 /**
   * Represents an ability to convert bean of type B to generic representation ([[shapeless.HList]]).
   * This is almost the same with [[shapeless.Generic]], but for JavaBeans. E.g:

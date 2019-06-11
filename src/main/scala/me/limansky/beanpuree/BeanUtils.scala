@@ -17,6 +17,7 @@
 package me.limansky.beanpuree
 
 import shapeless.CaseClassMacros
+import VersionSpecific._
 
 @macrocompat.bundle
 trait BeanUtils { self: CaseClassMacros =>
