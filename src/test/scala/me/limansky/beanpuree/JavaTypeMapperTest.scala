@@ -18,12 +18,13 @@ package me.limansky.beanpuree
 
 import java.math.{BigInteger, BigDecimal => JavaBigDecimal}
 
-import org.scalatest.{FlatSpec, Matchers}
 import shapeless.record._
 import shapeless.syntax.singleton._
 import shapeless.{::, HNil}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class JavaTypeMapperTest extends FlatSpec with Matchers {
+class JavaTypeMapperTest extends AnyFlatSpec with Matchers {
 
   "Mappers" should "support mapping between Java Integer and Int" in {
     val m = JavaTypeMapper[Integer, Int]

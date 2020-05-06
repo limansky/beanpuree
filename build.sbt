@@ -12,7 +12,7 @@ lazy val beanPuree = (project in file ("."))
       "com.chuusai"         %% "shapeless"        % "2.3.3",
       "org.scala-lang"      % "scala-reflect"     % scalaVersion.value    % Provided,
       "org.scala-lang"      % "scala-compiler"    % scalaVersion.value    % Provided,
-      "org.scalatest"       %% "scalatest"        % "3.0.8"           % Test
+      "org.scalatest"       %% "scalatest"        % "3.1.1"               % Test
     ) ++ {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, 10)) => Seq(

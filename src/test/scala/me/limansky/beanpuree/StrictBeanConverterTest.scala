@@ -16,10 +16,11 @@
 
 package me.limansky.beanpuree
 
-import org.scalatest.{FlatSpec, Matchers}
 import shapeless.Generic
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class StrictBeanConverterTest extends FlatSpec with Matchers {
+class StrictBeanConverterTest extends AnyFlatSpec with Matchers {
 
   "StrictBeanConverter" should "convert bean to case class" in {
     val converter = StrictBeanConverter[TestBean, TestProduct]

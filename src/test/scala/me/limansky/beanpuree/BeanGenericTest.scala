@@ -16,10 +16,11 @@
 
 package me.limansky.beanpuree
 
-import org.scalatest.{ FlatSpec, Matchers }
 import shapeless.{ ::, Generic, HList, HNil }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class BeanGenericTest extends FlatSpec with Matchers {
+class BeanGenericTest extends AnyFlatSpec with Matchers {
 
   "BeanGeneric" should "Build Repr type" in {
     val gen = BeanGeneric[TestBean]
