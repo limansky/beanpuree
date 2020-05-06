@@ -51,13 +51,7 @@ lazy val publishSettings = Seq(
       "scm:git:git@github.com/limansky/beanpuree.git"
     )
   ),
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (version.value.trim.endsWith("SNAPSHOT"))
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
+  publishTo := sonatypePublishToBundle.value,
   developers := List(
     Developer("limansky", "Mike Limansky", "mike.limansky@gmail.com", url("http://github.com/limansky"))
   )
@@ -75,9 +69,9 @@ lazy val releaseSettings = Seq(
     commitReleaseVersion,
     tagRelease,
     publishArtifacts,
+    releaseStepCommand("sonatypeBundleRelease"),
     setNextVersion,
     commitNextVersion,
-    releaseStepCommand("sonatypeReleaseAll"),
     pushChanges
   )
 )
