@@ -42,10 +42,10 @@ trait BeanUtils { self: CaseClassMacros =>
 
   def isSetter(sym: MethodSymbol, expectedTpe: Type): Boolean = {
     sym.typeSignature.finalResultType =:= typeOf[Unit] &&
-      (sym.paramLists match {
-        case List(List(t)) => t.typeSignature =:= expectedTpe
-        case _ => false
-      })
+    (sym.paramLists match {
+      case List(List(t)) => t.typeSignature =:= expectedTpe
+      case _             => false
+    })
   }
 
   trait BeanCtorDtor {
@@ -62,8 +62,8 @@ trait BeanUtils { self: CaseClassMacros =>
       val elems = fs.map(_ => TermName(c.freshName("pat")))
 
       val reprPattern =
-        elems.foldRight(q"_root_.shapeless.HNil": Tree) {
-          case (bound, acc) => pq"_root_.shapeless.::($bound, $acc)"
+        elems.foldRight(q"_root_.shapeless.HNil": Tree) { case (bound, acc) =>
+          pq"_root_.shapeless.::($bound, $acc)"
         }
 
       new BeanCtorDtor {
@@ -94,18 +94,20 @@ trait BeanUtils { self: CaseClassMacros =>
 
     val getters = methods
       .flatMap(mayBeGetter)
-      .filter(x => byName.get("set" + x._1)
-        .exists(sym => isSetter(sym, x._2.typeSignatureIn(tpe).finalResultType))
+      .filter(x =>
+        byName
+          .get("set" + x._1)
+          .exists(sym => isSetter(sym, x._2.typeSignatureIn(tpe).finalResultType))
       )
 
-    getters.map { case (name, getter) => Field(firstLower(name), getter, byName("set" + name))}
+    getters.map { case (name, getter) => Field(firstLower(name), getter, byName("set" + name)) }
   }
 
   def isBean(tpe: Type): Boolean = {
     val sym = tpe.typeSymbol.asType
     !isReprType(tpe) &&
-      !sym.isAbstract &&
-      tpe.decls.exists(x => x.isConstructor && x.isPublic && x.typeSignature.paramLists == List(List()))
+    !sym.isAbstract &&
+    tpe.decls.exists(x => x.isConstructor && x.isPublic && x.typeSignature.paramLists == List(List()))
   }
 
   private def firstLower(s: String): String = {

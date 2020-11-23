@@ -48,6 +48,7 @@ import VersionSpecific._
   * @tparam B the bean type
   */
 trait BeanGeneric[B] {
+
   /** Generic representation type {B} ([[shapeless.HList]]) */
   type Repr
 
@@ -62,6 +63,7 @@ trait BeanGeneric[B] {
   * The companion object for [[BeanGeneric]] trait providing the way to obtain [[BeanGeneric]] instances.
   */
 object BeanGeneric {
+
   /**
     * Provides representation of BeanGeneric with Repr type as a type parameter.  This representation is useful
     * in implicit parameters capturing:

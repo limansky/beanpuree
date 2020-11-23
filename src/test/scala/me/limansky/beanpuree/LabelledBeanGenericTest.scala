@@ -31,13 +31,18 @@ class LabelledBeanGenericTest extends AnyFlatSpec with Matchers {
     bean.setString("451")
     bean.setAmount(5L)
 
-    gen.to(bean) shouldEqual Symbol("count") ->> 4 :: Symbol("string") ->> "451" :: Symbol("amount") ->> java.lang.Long.valueOf(5) :: Symbol("enabled") ->> true :: HNil
+    gen.to(bean) shouldEqual Symbol("count") ->> 4 :: Symbol("string") ->> "451" :: Symbol("amount") ->> java.lang.Long
+      .valueOf(5) :: Symbol("enabled") ->> true :: HNil
   }
 
   it should "convert Repr to bean" in {
     val gen = LabelledBeanGeneric[TestBean]
 
-    val bean = gen.from(Symbol("count") ->> 4 :: Symbol("string") ->> "451" :: Symbol("amount") ->> java.lang.Long.valueOf(5) :: Symbol("enabled") ->> true :: HNil)
+    val bean = gen.from(
+      Symbol("count") ->> 4 :: Symbol("string") ->> "451" :: Symbol("amount") ->> java.lang.Long.valueOf(5) :: Symbol(
+        "enabled"
+      ) ->> true :: HNil
+    )
     bean.getAmount shouldEqual 5L
     bean.getCount shouldEqual 4
     bean.getString shouldEqual "451"

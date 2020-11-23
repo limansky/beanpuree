@@ -24,7 +24,7 @@ class BeanLabellingTest extends AnyFlatSpec with Matchers {
 
   "BeanLabelling" should "extract field names" in {
     val lab = BeanLabelling[TestBean]
-    lab() shouldEqual  'count :: 'string :: 'amount :: 'enabled :: HNil
+    lab() shouldEqual 'count :: 'string :: 'amount :: 'enabled :: HNil
   }
 
   it should "skip invalid setters and getters" in {

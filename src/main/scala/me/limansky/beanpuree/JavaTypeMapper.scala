@@ -17,7 +17,7 @@
 package me.limansky.beanpuree
 
 import shapeless.labelled.FieldType
-import shapeless.{::, HList, Lazy}
+import shapeless.{ ::, HList, Lazy }
 import shapeless.labelled.field
 
 /**
@@ -35,8 +35,10 @@ import shapeless.labelled.field
   * @tparam S Scala type
   */
 trait JavaTypeMapper[J, S] {
+
   /** Converts from J to S */
   def javaToScala(j: J): S
+
   /** Converts from S to J */
   def scalaToJava(s: S): J
 }
@@ -64,19 +66,23 @@ object JavaTypeMapper extends LowPriorityJavaTypeMapper {
 
   implicit val booleanMapper: JavaTypeMapper[java.lang.Boolean, Boolean] = of(_.booleanValue, new java.lang.Boolean(_))
 
-  implicit def fieldMapper[K, J, S](implicit m: JavaTypeMapper[J, S]): JavaTypeMapper[FieldType[K, J], FieldType[K, S]] = of(
+  implicit def fieldMapper[K, J, S](implicit
+      m: JavaTypeMapper[J, S]
+  ): JavaTypeMapper[FieldType[K, J], FieldType[K, S]] = of(
     j => field[K](m.javaToScala(j)),
     s => field[K](m.scalaToJava(s))
   )
 
-  implicit def nullableToMappedOption[J >: Null, S](implicit inner: JavaTypeMapper[J, S]): JavaTypeMapper[J, Option[S]] = of(
+  implicit def nullableToMappedOption[J >: Null, S](implicit
+      inner: JavaTypeMapper[J, S]
+  ): JavaTypeMapper[J, Option[S]] = of(
     x => Option(x).map(inner.javaToScala),
     _.map(inner.scalaToJava).orNull
   )
 
   implicit def hconsMapper[JH, JT <: HList, SH, ST <: HList](implicit
-    hMapper: Lazy[JavaTypeMapper[JH, SH]],
-    tMapper: JavaTypeMapper[JT, ST]
+      hMapper: Lazy[JavaTypeMapper[JH, SH]],
+      tMapper: JavaTypeMapper[JT, ST]
   ): JavaTypeMapper[JH :: JT, SH :: ST] = of(
     j => hMapper.value.javaToScala(j.head) :: tMapper.javaToScala(j.tail),
     s => hMapper.value.scalaToJava(s.head) :: tMapper.scalaToJava(s.tail)

@@ -17,7 +17,7 @@
 package me.limansky.beanpuree
 
 import shapeless.ops.hlist.Align
-import shapeless.{HList, LabelledGeneric}
+import shapeless.{ HList, LabelledGeneric }
 
 /**
   * Converts bean to product type (case class) and backwards.
@@ -29,8 +29,10 @@ import shapeless.{HList, LabelledGeneric}
   * @tparam P product type type
   */
 trait StrictBeanConverter[B, P] {
+
   /** Converts product instance to bean */
   def productToBean(p: P): B
+
   /** Converts bean instance to product */
   def beanToProduct(b: B): P
 }
@@ -39,10 +41,10 @@ object StrictBeanConverter {
   def apply[B, S](implicit beanConverter: StrictBeanConverter[B, S]): StrictBeanConverter[B, S] = beanConverter
 
   implicit def converter[B, P, BR <: HList, PR <: HList](implicit
-    gen: LabelledGeneric.Aux[P, PR],
-    bgen: LabelledBeanGeneric.Aux[B, BR],
-    align: Align[BR, PR],
-    revAlign: Align[PR, BR]
+      gen: LabelledGeneric.Aux[P, PR],
+      bgen: LabelledBeanGeneric.Aux[B, BR],
+      align: Align[BR, PR],
+      revAlign: Align[PR, BR]
   ): StrictBeanConverter[B, P] = new StrictBeanConverter[B, P] {
     override def productToBean(p: P): B = bgen.from(revAlign(gen.to(p)))
     override def beanToProduct(b: B): P = gen.from(align(bgen.to(b)))

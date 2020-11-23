@@ -29,12 +29,15 @@ import shapeless.ops.hlist.ZipWithKeys
   * @tparam B bean type
   */
 trait LabelledBeanGeneric[B] {
+
   /** Generic representation of B */
   type Repr
+
   /** Converts bean instance to generic value representation */
-  def to(b: B) : Repr
+  def to(b: B): Repr
+
   /** Converts generic value into bean */
-  def from(r: Repr) : B
+  def from(r: Repr): B
 }
 
 /**
@@ -46,10 +49,10 @@ object LabelledBeanGeneric {
   def apply[B](implicit gen: LabelledBeanGeneric[B]): Aux[B, gen.Repr] = gen
 
   implicit def beanLabelledGeneric[B, K <: HList, G <: HList, R <: HList](implicit
-    lab: BeanLabelling.Aux[B, K],
-    gen: BeanGeneric.Aux[B, G],
-    zip: ZipWithKeys.Aux[K, G, R],
-    ev: R <:< G
+      lab: BeanLabelling.Aux[B, K],
+      gen: BeanGeneric.Aux[B, G],
+      zip: ZipWithKeys.Aux[K, G, R],
+      ev: R <:< G
   ): Aux[B, R] = new LabelledBeanGeneric[B] {
     override type Repr = R
     override def to(b: B): R = zip(gen.to(b))

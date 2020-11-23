@@ -16,7 +16,7 @@
 
 package me.limansky.beanpuree
 
-import shapeless.{CaseClassMacros, DepFn0, HList, SingletonTypeUtils}
+import shapeless.{ CaseClassMacros, DepFn0, HList, SingletonTypeUtils }
 
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
@@ -42,7 +42,7 @@ object BeanLabelling {
 class BeanLabellingMacros(val c: whitebox.Context) extends SingletonTypeUtils with CaseClassMacros with BeanUtils {
   import c.universe._
 
-  def mkLabelling[B : WeakTypeTag]: Tree = {
+  def mkLabelling[B: WeakTypeTag]: Tree = {
     val tpe = weakTypeOf[B]
 
     if (!isBean(tpe)) abort(s"$tpe is not a bean")

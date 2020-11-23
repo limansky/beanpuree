@@ -16,11 +16,11 @@
 
 package me.limansky.beanpuree
 
-import java.math.{BigInteger, BigDecimal => JavaBigDecimal}
+import java.math.{ BigInteger, BigDecimal => JavaBigDecimal }
 
 import shapeless.record._
 import shapeless.syntax.singleton._
-import shapeless.{::, HNil}
+import shapeless.{ ::, HNil }
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -43,8 +43,8 @@ class JavaTypeMapperTest extends AnyFlatSpec with Matchers {
   it should "support mapping between Java Long and Long" in {
     val m = JavaTypeMapper[java.lang.Long, Long]
 
-    m.javaToScala(java.lang.Long.valueOf(42)) shouldEqual 42l
-    m.scalaToJava(25l) shouldEqual java.lang.Long.valueOf(25)
+    m.javaToScala(java.lang.Long.valueOf(42)) shouldEqual 42L
+    m.scalaToJava(25L) shouldEqual java.lang.Long.valueOf(25)
   }
 
   it should "support mapping between Character and Char" in {
@@ -102,7 +102,9 @@ class JavaTypeMapperTest extends AnyFlatSpec with Matchers {
   it should "support mapping HLists" in {
     val m = JavaTypeMapper[Integer :: String :: java.lang.Double :: HNil, Int :: String :: Option[Double] :: HNil]
 
-    m.javaToScala(Integer.valueOf(42) :: "test me" :: java.lang.Double.valueOf(33d) :: HNil) shouldEqual 42 :: "test me" :: Some(33d) :: HNil
+    m.javaToScala(
+      Integer.valueOf(42) :: "test me" :: java.lang.Double.valueOf(33d) :: HNil
+    ) shouldEqual 42 :: "test me" :: Some(33d) :: HNil
     m.javaToScala(Integer.valueOf(142) :: null :: null :: HNil) shouldEqual 142 :: null :: None :: HNil
 
     m.scalaToJava(212 :: "abc" :: Some(13.33) :: HNil) shouldEqual Integer.valueOf(212) :: "abc" :: 13.33 :: HNil
@@ -115,7 +117,11 @@ class JavaTypeMapperTest extends AnyFlatSpec with Matchers {
 
     val m = JavaTypeMapper[JavaHList, ScalaHList]
 
-    m.javaToScala(('x ->> "hello") :: ('y ->> Integer.valueOf(123)) :: HNil) shouldEqual ('x ->> "hello") :: ('y ->> 123) :: HNil
-    m.scalaToJava(('x ->> "world") :: ('y ->> 42) :: HNil) shouldEqual ('x ->> "world") :: ('y ->> Integer.valueOf(42)) :: HNil
+    m.javaToScala(
+      ('x ->> "hello") :: ('y ->> Integer.valueOf(123)) :: HNil
+    ) shouldEqual ('x ->> "hello") :: ('y ->> 123) :: HNil
+    m.scalaToJava(('x ->> "world") :: ('y ->> 42) :: HNil) shouldEqual ('x ->> "world") :: ('y ->> Integer.valueOf(
+      42
+    )) :: HNil
   }
 }
