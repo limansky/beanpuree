@@ -112,15 +112,18 @@ class JavaTypeMapperTest extends AnyFlatSpec with Matchers {
   }
 
   it should "support mapping labelled HLists" in {
-    type JavaHList = Record.`'x -> String, 'y -> Integer`.T
-    type ScalaHList = Record.`'x -> String, 'y -> Int`.T
+    type JavaHList = Record.`"x" -> String, "y" -> Integer`.T
+    type ScalaHList = Record.`"x" -> String, "y" -> Int`.T
 
     val m = JavaTypeMapper[JavaHList, ScalaHList]
 
     m.javaToScala(
-      ('x ->> "hello") :: ('y ->> Integer.valueOf(123)) :: HNil
-    ) shouldEqual ('x ->> "hello") :: ('y ->> 123) :: HNil
-    m.scalaToJava(('x ->> "world") :: ('y ->> 42) :: HNil) shouldEqual ('x ->> "world") :: ('y ->> Integer.valueOf(
+      ("x" ->> "hello") :: ("y" ->> Integer.valueOf(123)) :: HNil
+    ) shouldEqual (Symbol("x") ->> "hello") :: (Symbol("y") ->> 123) :: HNil
+
+    m.scalaToJava(("x" ->> "world") :: ("y" ->> 42) :: HNil) shouldEqual (Symbol(
+      "x"
+    ) ->> "world") :: (Symbol("y") ->> Integer.valueOf(
       42
     )) :: HNil
   }

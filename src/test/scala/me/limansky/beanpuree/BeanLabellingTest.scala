@@ -24,18 +24,18 @@ class BeanLabellingTest extends AnyFlatSpec with Matchers {
 
   "BeanLabelling" should "extract field names" in {
     val lab = BeanLabelling[TestBean]
-    lab() shouldEqual 'count :: 'string :: 'amount :: 'enabled :: HNil
+    lab() shouldEqual Symbol("count") :: Symbol("string") :: Symbol("amount") :: Symbol("enabled") :: HNil
   }
 
   it should "skip invalid setters and getters" in {
     val lab = BeanLabelling[WeirdBean]
 
-    lab() shouldEqual 'y :: HNil
+    lab() shouldEqual Symbol("y") :: HNil
   }
 
   it should "ignore non-public methods" in {
     val lab = BeanLabelling[BeanWithPrivate]
 
-    lab() shouldEqual 'a :: HNil
+    lab() shouldEqual Symbol("a") :: HNil
   }
 }
