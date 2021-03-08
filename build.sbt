@@ -1,5 +1,7 @@
 import ReleaseTransformations._
 
+val scalaTestVersion = "3.2.6"
+
 lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
@@ -9,10 +11,12 @@ lazy val beanPuree = (project in file ("."))
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
     libraryDependencies ++= Seq(
-      "com.chuusai"         %% "shapeless"        % "2.3.3",
-      "org.scala-lang"      % "scala-reflect"     % scalaVersion.value    % Provided,
-      "org.scala-lang"      % "scala-compiler"    % scalaVersion.value    % Provided,
-      "org.scalatest"       %% "scalatest"        % "3.2.3"               % Test
+      "com.chuusai"         %% "shapeless"                  % "2.3.3",
+      "org.scala-lang"      %  "scala-reflect"              % scalaVersion.value    % Provided,
+      "org.scala-lang"      %  "scala-compiler"             % scalaVersion.value    % Provided,
+      "org.scalatest"       %% "scalatest-core"             % scalaTestVersion      % Test,
+      "org.scalatest"       %% "scalatest-shouldmatchers"   % scalaTestVersion      % Test,
+      "org.scalatest"       %% "scalatest-flatspec"         % scalaTestVersion      % Test
     ) ++ {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, 10)) => Seq(
