@@ -19,5 +19,11 @@ scala:
 jdk:
   - openjdk8
 
+cache:
+  directories:
+    - "$HOME/.ivy2/cache"
+    - "$HOME/.cache/coursier"
+    - "$HOME/.sbt"
+
 script:
   - scripts/travis-build.sh
