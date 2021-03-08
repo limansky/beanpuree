@@ -64,7 +64,7 @@ object JavaTypeMapper extends LowPriorityJavaTypeMapper {
 
   implicit val charMapper: JavaTypeMapper[Character, Char] = of(_.charValue, Character.valueOf)
 
-  implicit val booleanMapper: JavaTypeMapper[java.lang.Boolean, Boolean] = of(_.booleanValue, new java.lang.Boolean(_))
+  implicit val booleanMapper: JavaTypeMapper[java.lang.Boolean, Boolean] = of(_.booleanValue, java.lang.Boolean.valueOf)
 
   implicit def fieldMapper[K, J, S](implicit
       m: JavaTypeMapper[J, S]
