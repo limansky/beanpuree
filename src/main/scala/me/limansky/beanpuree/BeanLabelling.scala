@@ -21,8 +21,6 @@ import shapeless.{ CaseClassMacros, DepFn0, HList, SingletonTypeUtils }
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
-import VersionSpecific._
-
 /**
   * Represents ability to extract labels, like [[shapeless.DefaultSymbolicLabelling]] but for JavaBeans.
   *
@@ -38,7 +36,6 @@ object BeanLabelling {
   implicit def beanLabelling[B]: BeanLabelling[B] = macro BeanLabellingMacros.mkLabelling[B]
 }
 
-@macrocompat.bundle
 class BeanLabellingMacros(val c: whitebox.Context) extends SingletonTypeUtils with CaseClassMacros with BeanUtils {
   import c.universe._
 
