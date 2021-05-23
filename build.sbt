@@ -1,17 +1,17 @@
 import ReleaseTransformations._
 
-val scalaTestVersion = "3.2.6"
+val scalaTestVersion = "3.2.9"
 
 lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
     scalaVersion := "2.12.13",
-    crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.5"),
+    crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
     libraryDependencies ++= Seq(
-      "com.chuusai"         %% "shapeless"                  % "2.3.5",
+      "com.chuusai"         %% "shapeless"                  % "2.3.7",
       "org.scala-lang"      %  "scala-reflect"              % scalaVersion.value    % Provided,
       "org.scala-lang"      %  "scala-compiler"             % scalaVersion.value    % Provided,
       "org.scalatest"       %% "scalatest-core"             % scalaTestVersion      % Test,
