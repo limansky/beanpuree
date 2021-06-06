@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  build:
+    name: Build and test
+    strategy:
+      matrix:
+        scala: [ 2.11.12, 2.12.14, 2.13.6 ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Scala
+      uses: olafurpg/setup-scala@v12
+      with:
+        java-version: 'adopt@1.8'
+
+    - name: Cache sbt
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.sbt
+          ~/.ivy2/cache
+          ~/.coursier/cache/v1
+          ~/.cache/coursier/v1
+          ~/AppData/Local/Coursier/Cache/v1
+          ~/Library/Caches/Coursier/v1
+        key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
+        
+        
+    - name: Run tests and coverage
+      run: sbt --client '++${{ matrix.scala }} clean; coverage; test'
+
+    - name: Coverage
+      if: ${{ startsWith(matrix.scala, '2.13') }}
+      run: sbt --client '++${{ matrix.scala }} coverageReport'
+
+    - name: Codecov
+      if: ${{ startsWith(matrix.scala, '2.13') }}
+      uses: codecov/codecov-action@v1
