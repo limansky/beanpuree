@@ -14,6 +14,10 @@ public class WeirdBean {
         this.w = Long.valueOf(w).intValue();
     }
 
+    public void setW(int a, int b) {
+        w = a * b;
+    }
+
     public int getX(int y) {
         return y;
     }
