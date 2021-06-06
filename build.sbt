@@ -5,8 +5,8 @@ val scalaTestVersion = "3.2.9"
 lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
-    scalaVersion := "2.12.13",
-    crossScalaVersions := Seq("2.11.12", "2.12.13", "2.13.6"),
+    scalaVersion := "2.12.14",
+    crossScalaVersions := Seq("2.11.12", "2.12.14", "2.13.6"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
