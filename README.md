@@ -5,7 +5,7 @@ BeanPurée
 
 > NOTE: The library is in active development stage. So the API might be changed.
 
-[![Build Status](https://travis-ci.com/limansky/beanpuree.svg?branch=master)](https://travis-ci.com/limansky/beanpuree)
+[![Build Status](https://github.com/limansky/beanpuree/actions/workflows/ci.yml/badge.svg)](https://github.com/limansky/beanpuree/actions/workflows/ci.yml)
 [![Join the chat at https://gitter.im/limansky/beanpuree](https://badges.gitter.im/limansky/beanpuree.svg)](https://gitter.im/limansky/beanpuree?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![codecov](https://codecov.io/gh/limansky/beanpuree/branch/master/graph/badge.svg)](https://codecov.io/gh/limansky/beanpuree)
 [![Maven Central](https://img.shields.io/maven-central/v/me.limansky/beanpuree_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/me.limansky/beanpuree_2.12)
