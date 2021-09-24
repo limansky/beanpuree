@@ -24,7 +24,8 @@ import scala.reflect.macros.whitebox
 /**
   * Represents ability to extract labels, like [[shapeless.DefaultSymbolicLabelling]] but for JavaBeans.
   *
-  * @tparam B bean to extract labels
+  * @tparam B
+  *   bean to extract labels
   */
 trait BeanLabelling[B] extends DepFn0 with Serializable { type Out <: HList }
 

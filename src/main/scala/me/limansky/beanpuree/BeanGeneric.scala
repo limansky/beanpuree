@@ -22,8 +22,8 @@ import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
 /**
-  * Represents an ability to convert bean of type B to generic representation ([[shapeless.HList]]).
-  * This is almost the same with [[shapeless.Generic]], but for JavaBeans. E.g:
+  * Represents an ability to convert bean of type B to generic representation ([[shapeless.HList]]). This is almost the
+  * same with [[shapeless.Generic]], but for JavaBeans. E.g:
   *
   * {{{
   *   public class Cat {
@@ -38,12 +38,13 @@ import scala.reflect.macros.whitebox
   *   }
   * }}}
   *
-  * Then the BeanGeneric instance will have `Repr` = `String :: Int :: HNil`. Note that the HList
-  * order is the same with the bean properties getters declaration order.
+  * Then the BeanGeneric instance will have `Repr` = `String :: Int :: HNil`. Note that the HList order is the same with
+  * the bean properties getters declaration order.
   *
   * Now it's possible to convert bean to HList, and then convert HList to something else.
   *
-  * @tparam B the bean type
+  * @tparam B
+  *   the bean type
   */
 trait BeanGeneric[B] {
 
@@ -63,8 +64,8 @@ trait BeanGeneric[B] {
 object BeanGeneric {
 
   /**
-    * Provides representation of BeanGeneric with Repr type as a type parameter.  This representation is useful
-    * in implicit parameters capturing:
+    * Provides representation of BeanGeneric with Repr type as a type parameter. This representation is useful in
+    * implicit parameters capturing:
     *
     * {{{
     *   def convert[A, B, R <: HList](a: A)(implicit
@@ -72,8 +73,10 @@ object BeanGeneric {
     *     bgen: Generic.Aux[B, R]): B = bgen.from(agen.to(a))
     * }}}
     *
-    * @tparam B bean type
-    * @tparam R generic representation type
+    * @tparam B
+    *   bean type
+    * @tparam R
+    *   generic representation type
     */
   type Aux[B, R] = BeanGeneric[B] { type Repr = R }
 
