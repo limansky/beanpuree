@@ -1,12 +1,12 @@
 import ReleaseTransformations._
 
-val scalaTestVersion = "3.2.9"
+val scalaTestVersion = "3.2.10"
 
 lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
-    scalaVersion := "2.12.14",
-    crossScalaVersions := Seq("2.11.12", "2.12.14", "2.13.6"),
+    scalaVersion := "2.12.15",
+    crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.6"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
@@ -24,15 +24,6 @@ lazy val beanPuree = (project in file ("."))
         )
         case Some((2, 13)) => Seq.empty
         case _ => sys.error("Unsupported Scala version")
-      }
-    },
-    Compile / unmanagedSourceDirectories ++= {
-      (Compile / unmanagedSourceDirectories).value.filter(_.getName == "scala").flatMap { dir =>
-        CrossVersion.partialVersion(scalaVersion.value) match {
-          case Some((2, 10)) => Seq.empty
-          case Some((2, x)) if x >= 11 => Seq(new File(dir.getPath + "-2.11+"))
-          case _ => sys.error("Unsupported Scala version")
-        }
       }
     },
     publishSettings,
