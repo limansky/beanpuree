@@ -24,9 +24,12 @@ import shapeless.ops.record.{ AlignByKeys, Keys }
   *
   * Doesn't care about fields order. The fields have to have compatible types.
   *
-  * @see [[LabelledBeanGeneric]], [[JavaTypeMapper]]
-  * @tparam B bean type
-  * @tparam P product type type
+  * @see
+  *   [[LabelledBeanGeneric]], [[JavaTypeMapper]]
+  * @tparam B
+  *   bean type
+  * @tparam P
+  *   product type type
   */
 trait BeanConverter[B, P] {
 

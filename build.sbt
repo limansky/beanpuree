@@ -2,7 +2,7 @@ import ReleaseTransformations._
 
 val scalaTestVersion = "3.2.10"
 
-lazy val beanPuree = (project in file ("."))
+lazy val beanPuree = (project in file("."))
   .settings(
     name := "beanpuree",
     scalaVersion := "2.12.15",
@@ -11,19 +11,20 @@ lazy val beanPuree = (project in file ("."))
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
     libraryDependencies ++= Seq(
-      "com.chuusai"         %% "shapeless"                  % "2.3.7",
-      "org.scala-lang"      %  "scala-reflect"              % scalaVersion.value    % Provided,
-      "org.scala-lang"      %  "scala-compiler"             % scalaVersion.value    % Provided,
-      "org.scalatest"       %% "scalatest-core"             % scalaTestVersion      % Test,
-      "org.scalatest"       %% "scalatest-shouldmatchers"   % scalaTestVersion      % Test,
-      "org.scalatest"       %% "scalatest-flatspec"         % scalaTestVersion      % Test
+      "com.chuusai" %% "shapeless" % "2.3.7",
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
+      "org.scalatest" %% "scalatest-core" % scalaTestVersion % Test,
+      "org.scalatest" %% "scalatest-shouldmatchers" % scalaTestVersion % Test,
+      "org.scalatest" %% "scalatest-flatspec" % scalaTestVersion % Test
     ) ++ {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, x)) if x == 11 || x == 12 => Seq(
-          compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.patch)
-        )
+        case Some((2, x)) if x == 11 || x == 12 =>
+          Seq(
+            compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.patch)
+          )
         case Some((2, 13)) => Seq.empty
-        case _ => sys.error("Unsupported Scala version")
+        case _             => sys.error("Unsupported Scala version")
       }
     },
     publishSettings,

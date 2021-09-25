@@ -20,13 +20,13 @@ import shapeless.HList
 import shapeless.ops.hlist.ZipWithKeys
 
 /**
-  * Similar to [[BeanGeneric]], but like [[shapeless.LabelledGeneric]] adds field names information
-  * to Repr. Field names are calculated from getters. E.g `getLoginDate` become `loginDate`, and `isActive`
-  * become `active`.
+  * Similar to [[BeanGeneric]], but like [[shapeless.LabelledGeneric]] adds field names information to Repr. Field names
+  * are calculated from getters. E.g `getLoginDate` become `loginDate`, and `isActive` become `active`.
   *
   * For the bean from the [[BeanGeneric]] example the Repr type will be `'name -> String :: 'age -> Int :: HNil`.
   *
-  * @tparam B bean type
+  * @tparam B
+  *   bean type
   */
 trait LabelledBeanGeneric[B] {
 
@@ -41,7 +41,7 @@ trait LabelledBeanGeneric[B] {
 }
 
 /**
-  * Companion for [[LabelledBeanGeneric]].  Provides ability to obtain an instance of [[LabelledBeanGeneric]].
+  * Companion for [[LabelledBeanGeneric]]. Provides ability to obtain an instance of [[LabelledBeanGeneric]].
   */
 object LabelledBeanGeneric {
   type Aux[B, R] = LabelledBeanGeneric[B] { type Repr = R }

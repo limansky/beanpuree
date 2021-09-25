@@ -24,9 +24,12 @@ import shapeless.{ HList, LabelledGeneric }
   *
   * Doesn't care about fields order. Only requires that the fields have same type and same name.
   *
-  * @see [[LabelledBeanGeneric]]
-  * @tparam B bean type
-  * @tparam P product type type
+  * @see
+  *   [[LabelledBeanGeneric]]
+  * @tparam B
+  *   bean type
+  * @tparam P
+  *   product type type
   */
 trait StrictBeanConverter[B, P] {
 
