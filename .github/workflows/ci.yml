@@ -11,7 +11,7 @@ jobs:
     name: Build and test
     strategy:
       matrix:
-        scala: [ 2.11.12, 2.12.15, 2.13.6 ]
+        scala: [ 2.11.12, 2.12.15, 2.13.7 ]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

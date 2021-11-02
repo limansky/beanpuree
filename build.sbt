@@ -6,7 +6,7 @@ lazy val beanPuree = (project in file ("."))
   .settings(
     name := "beanpuree",
     scalaVersion := "2.12.15",
-    crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.6"),
+    crossScalaVersions := Seq("2.11.12", "2.12.15", "2.13.7"),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
