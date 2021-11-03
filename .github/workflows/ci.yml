@@ -19,7 +19,7 @@ jobs:
     - name: Set up Scala
       uses: olafurpg/setup-scala@v13
       with:
-        java-version: 'temurin@1.8'
+        java-version: 'liberica@1.8'
 
     - name: Cache sbt
       uses: actions/cache@v2
