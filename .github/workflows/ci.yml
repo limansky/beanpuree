@@ -33,6 +33,8 @@ jobs:
           ~/Library/Caches/Coursier/v1
         key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
         
+    - name: Verify formatting
+      run: sbt scalafmtCheckAll
         
     - name: Run tests and coverage
       run: sbt --client '++${{ matrix.scala }} clean; coverage; test'
