@@ -1,6 +1,6 @@
 import ReleaseTransformations._
 
-val scalaTestVersion = "3.2.11"
+val scalaTestVersion = "3.2.12"
 
 lazy val beanPuree = (project in file ("."))
   .settings(
