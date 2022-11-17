@@ -36,7 +36,12 @@ jobs:
     - name: Verify formatting
       run: sbt scalafmtCheckAll
 
+    - name: Run tests
+      if: ${{ !startsWith(matrix.scala, '2.13') }}
+      run: sbt --client '++${{ matrix.scala }} clean; test'
+
     - name: Run tests and coverage
+      if: ${{ startsWith(matrix.scala, '2.13') }}
       run: sbt --client '++${{ matrix.scala }} clean; coverage; test'
 
     - name: Coverage
