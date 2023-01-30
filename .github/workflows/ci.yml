@@ -52,3 +52,51 @@ jobs:
     - name: Codecov
       if: ${{ startsWith(matrix.scala, '2.13') }}
       uses: codecov/codecov-action@v3.1.1
+
+  publish:
+    name: Publish artifacts
+    needs: [build]
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3.9.0
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+
+    - name: Cache sbt
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.sbt
+          ~/.ivy2/cache
+          ~/.coursier/cache/v1
+          ~/.cache/coursier/v1
+          ~/AppData/Local/Coursier/Cache/v1
+          ~/Library/Caches/Coursier/v1
+        key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
+
+    - name: Publish snapshot
+      if: ! startsWith(github.ref, 'refs/tags/v')
+      run: sbt --client +publish
+      env:
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USER }}
+        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+
+    - name: Setup GPG
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        echo "$PGP_SECRET" | base64 --decode | gpg --batch --import
+      env:
+        PGP_SECRET: ${{ secrets.PGP_SECRET }}
+
+    - name: Publish release
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: sbt --client +publishSigned sonatypeBundleRelease
+      env:
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USER }}
+        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
