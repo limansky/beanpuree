@@ -51,7 +51,7 @@ jobs:
 
     - name: Codecov
       if: ${{ startsWith(matrix.scala, '2.13') }}
-      uses: codecov/codecov-action@v4.3.0
+      uses: codecov/codecov-action@v4.3.1
 
   publish:
     name: Publish artifacts
