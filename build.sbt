@@ -10,8 +10,13 @@ lazy val beanPuree = (project in file ("."))
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "me.limansky",
     incOptions := incOptions.value.withLogRecompileOnMacro(false),
+    libraryDependencies += {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, 11)) => "com.chuusai" %% "shapeless" % "2.3.11"
+        case _             => "com.chuusai" %% "shapeless" % "2.3.13"
+      }
+    },
     libraryDependencies ++= Seq(
-      "com.chuusai"         %% "shapeless"                  % "2.3.11",
       "org.scala-lang"      %  "scala-reflect"              % scalaVersion.value    % Provided,
       "org.scala-lang"      %  "scala-compiler"             % scalaVersion.value    % Provided,
       "org.scalatest"       %% "scalatest-core"             % scalaTestVersion      % Test,
