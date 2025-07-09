@@ -21,7 +21,7 @@ helps to convert data between JavaBeans and case classes.
 
 ## Usage
 
-BeanPurée is available for Scala 2.10, 2.11, 2.12 and 2.13. You can add it to your project
+BeanPurée is available for 2.11, 2.12 and 2.13. You can add it to your project
 adding in `build.sbt`
 
 ```Scala
@@ -31,7 +31,7 @@ libraryDependencies += "me.limansky" %% "beanpuree" % "0.7"
 If you'd like to use development version:
 
 ```Scala
-resolvers += Resolver.sonatypeRepo("snapshots")
+resolvers += Resolver.sonatypeCentralSnapshots
 
 libraryDependencies += "me.limansky" %% "beanpuree" % "0.8-SNAPSHOT"
 ```

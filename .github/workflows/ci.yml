@@ -101,7 +101,7 @@ jobs:
 
     - name: Publish release
       if: startsWith(github.ref, 'refs/tags/v')
-      run: sbt --client +publishSigned sonatypeBundleRelease
+      run: sbt --client +publishSigned sonaRelease
       env:
         SONATYPE_USERNAME: ${{ secrets.SONATYPE_USER }}
         SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}

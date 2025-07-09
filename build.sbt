@@ -46,7 +46,10 @@ lazy val publishSettings = Seq(
       "scm:git:git@github.com/limansky/beanpuree.git"
     )
   ),
-  publishTo := sonatypePublishToBundle.value,
+  publishTo := {
+    if (isSnapshot.value) Some(Resolver.sonatypeCentralSnapshots)
+    else localStaging.value
+  },
   developers := List(
     Developer("limansky", "Mike Limansky", "mike.limansky@gmail.com", url("http://github.com/limansky"))
   )
@@ -64,7 +67,7 @@ lazy val releaseSettings = Seq(
     commitReleaseVersion,
     tagRelease,
     publishArtifacts,
-    releaseStepCommand("sonatypeBundleRelease"),
+    releaseStepCommand("sonaRelease"),
     setNextVersion,
     commitNextVersion,
     pushChanges
