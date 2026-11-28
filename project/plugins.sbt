@@ -1,4 +1,4 @@
-addSbtPlugin("com.thoughtworks.sbt-api-mappings" % "sbt-api-mappings" % "3.1.0")
+addSbtPlugin("com.thoughtworks.sbt-api-mappings" % "sbt-api-mappings" % "3.1.1")
 
 addSbtPlugin("com.github.sbt" % "sbt-release" % "1.6.0")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.4.0")
